@@ -7,7 +7,8 @@
   "scripts": {
     "build": "rm -rf dest && sleep 1 && npx tsc -p tsconfig.json --watch",
     "dev": "nodemon ./dest/index.js",
-    "lint": "npx eslint src/**"
+    "lint": "npx eslint src/**",
+    "db:update": "npx prisma db push"
   },
   "repository": {
     "type": "git",
