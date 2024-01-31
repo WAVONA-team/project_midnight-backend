@@ -1,0 +1,42 @@
+{
+  "name": "project_midnight-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf dest && sleep 1 && npx tsc -p tsconfig.json --watch",
+    "dev": "nodemon ./dest/index.js",
+    "lint": "npx eslint src/**"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WAVONA-team/project_midnight-backend.git"
+  },
+  "author": "gosyav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WAVONA-team/project_midnight-backend/issues"
+  },
+  "homepage": "https://github.com/WAVONA-team/project_midnight-backend#readme",
+  "dependencies": {
+    "@prisma/adapter-pg": "^5.9.0",
+    "@prisma/client": "^5.9.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.13",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.3",
+    "prettier": "3.2.4",
+    "prisma": "^5.9.0",
+    "typescript": "^5.3.3"
+  }
+}
