@@ -5,7 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "rm -rf dest && sleep 1 && npx tsc -p tsconfig.json --watch",
+    "build": "rm -rf dest && sleep 1 && npx tsc -p tsconfig.json",
     "dev": "nodemon ./dest/index.js",
     "lint": "npx eslint src/**",
     "db:update": "npx prisma db push"
