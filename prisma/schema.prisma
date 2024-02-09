@@ -7,7 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model test {
-  id Int @id
-  message String
+model Token {
+  refreshToken String @unique
+  userId       String @unique
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id              String @id @default(uuid())
+  activationToken String @unique
+  refreshToken    Token?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email    String
+  password String
+
+  spotifyOAUTH String
+  yandexOAUTH  String
+  vkOAUTH      String
+
+  tracks   Track[]
+  Playlist Playlist?
+}
+
+model Track {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  url    String
+  imgUrl String
+  author String
+  source String
+
+  playlist Playlist[]
+  user     User       @relation(fields: [userId], references: [id])
+}
+
+model Playlist {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tracks Track[]
+  user   User    @relation(fields: [userId], references: [id])
 }
