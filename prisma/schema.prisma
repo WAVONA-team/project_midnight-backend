@@ -16,18 +16,18 @@ model Token {
 
 model User {
   id              String @id @default(uuid())
-  activationToken String @unique
+  activationToken String? @unique
   refreshToken    Token?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email    String
+  email    String @unique
   password String
 
-  spotifyOAUTH String
-  yandexOAUTH  String
-  vkOAUTH      String
+  spotifyOAUTH String?
+  yandexOAUTH  String?
+  vkOAUTH      String?
 
   tracks   Track[]
   Playlist Playlist?
@@ -41,8 +41,8 @@ model Track {
   updatedAt DateTime @updatedAt
 
   url    String
-  imgUrl String
-  author String
+  imgUrl String?
+  author String?
   source String
 
   playlist Playlist[]
