@@ -1,5 +1,6 @@
 import { type Request, type Response } from 'express';
 import 'express-async-errors';
+import bcrypt from 'bcrypt';
 
 import {
   authSchema,
@@ -16,7 +17,9 @@ const register = async (req: Request, res: Response) => {
   authSchema.parse(req.body);
 
   const { email, password } = req.body;
-  const createdUser = await authService.register(email, password);
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const createdUser = await authService.register(email, hashedPassword);
 
   res.send(createdUser);
 };
@@ -37,7 +40,7 @@ const login = async (req: Request, res: Response) => {
 
   userLoginSchema.parse(user || {});
 
-  loginSchema.parse({
+  await loginSchema.parseAsync({
     email,
     confirmPassword: password,
     password: user!.password,

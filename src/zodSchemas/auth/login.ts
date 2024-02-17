@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import bcrypt from 'bcrypt';
 
 export const loginSchema = z
   .object({
@@ -6,10 +7,14 @@ export const loginSchema = z
     password: z.string(),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Wrong password!',
-    path: ['password'],
-  });
+  .refine(
+    async ({ password, confirmPassword }) =>
+      await bcrypt.compare(password, confirmPassword),
+    {
+      message: 'Wrong password!',
+      path: ['password'],
+    },
+  );
 
 export const userLoginSchema = z
   .object({
@@ -24,5 +29,5 @@ export const userLoginSchema = z
     vkOAUTH: z.string().optional().nullable(),
   })
   .refine((data) => data.id, {
-    message: 'Wrong activation code!',
+    message: 'User does not exists!',
   });
