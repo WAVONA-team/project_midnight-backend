@@ -24,5 +24,5 @@ export const userLoginSchema = z
     vkOAUTH: z.string().optional().nullable(),
   })
   .refine((data) => data.id, {
-    message: 'User does not exist!',
+    message: 'Wrong activation code!',
   });

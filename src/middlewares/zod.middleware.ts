@@ -11,12 +11,11 @@ export const zodMiddleware = (
   if (err instanceof ZodError) {
     return res.status(400).send({
       formErrors: err.flatten().formErrors[0] || '',
-      fieldErrors: Object.entries(err.flatten().fieldErrors).reduce(
-        (result, [key, value]) => ({
-          ...result,
-          [key]: value![0],
+      fieldErrors: Object.entries(err.flatten().fieldErrors).map(
+        ([key, value]) => ({
+          name: key,
+          message: value![0],
         }),
-        {},
       ),
     });
   }
