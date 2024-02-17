@@ -84,9 +84,21 @@ const generateTokens = async (res: Response, user: User) => {
   });
 };
 
+const logout = async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies;
+  const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+
+  refreshSchema.parse(user ? { ...(user as JwtPayload), refreshToken } : {});
+
+  await tokenService.remove(user.id);
+
+  res.sendStatus(204);
+};
+
 export const authController = {
   register,
   activate,
   login,
   refresh,
+  logout,
 };

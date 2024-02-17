@@ -7,3 +7,4 @@ authRouter.post('/register', authController.register);
 authRouter.get('/verify/:activationToken', authController.activate);
 authRouter.post('/login', authController.login);
 authRouter.get('/refresh', authController.refresh);
+authRouter.post('/logout', authController.logout);
