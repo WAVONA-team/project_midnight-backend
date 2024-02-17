@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config.js';
+import cookieParser from 'cookie-parser';
 
 import { zodMiddleware } from './middlewares/zod.middleware.js';
 
@@ -17,6 +18,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(authRouter);
 app.use('/users', userRouter);

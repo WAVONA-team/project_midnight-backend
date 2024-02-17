@@ -1,17 +1,22 @@
 import { type Request, type Response } from 'express';
 import 'express-async-errors';
 import bcrypt from 'bcrypt';
+import { JwtPayload } from 'jsonwebtoken';
+
+import { User } from 'project_midnight';
 
 import {
   authSchema,
   activateSchema,
   loginSchema,
   userLoginSchema,
+  refreshSchema,
 } from '../zodSchemas/auth/index.js';
 
 import { userService } from '../services/user.service.js';
 import { jwtService } from '../services/jwt.service.js';
 import { authService } from '../services/auth.service.js';
+import { tokenService } from '../services/token.service.js';
 
 const register = async (req: Request, res: Response) => {
   authSchema.parse(req.body);
@@ -46,8 +51,32 @@ const login = async (req: Request, res: Response) => {
     password: user!.password,
   });
 
+  await generateTokens(res, user as User);
+};
+
+const refresh = async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies;
+
+  const user = jwtService.verifyRefresh(refreshToken);
+  const token = await tokenService.getByToken(refreshToken);
+
+  refreshSchema.parse(user ? { ...(user as JwtPayload), token } : {});
+
+  generateTokens(res, user as User);
+};
+
+const generateTokens = async (res: Response, user: User) => {
   const normalizedUser = userService.normalize(user!);
+
   const accessToken = jwtService.sign(normalizedUser);
+  const refreshAccessToken = jwtService.signRefresh(normalizedUser);
+
+  await tokenService.save(normalizedUser.id, refreshAccessToken);
+
+  res.cookie('refreshToken', refreshAccessToken, {
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  });
 
   res.send({
     user: normalizedUser,
@@ -59,4 +88,5 @@ export const authController = {
   register,
   activate,
   login,
+  refresh,
 };
