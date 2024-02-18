@@ -9,7 +9,7 @@ export const loginSchema = z
   })
   .refine(
     async ({ password, confirmPassword }) =>
-      await bcrypt.compare(password, confirmPassword),
+      await bcrypt.compare(confirmPassword, password),
     {
       message: 'Wrong password!',
       path: ['password'],

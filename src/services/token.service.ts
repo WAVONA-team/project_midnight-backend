@@ -23,7 +23,7 @@ const save = async (userId: string, newToken: string) => {
 };
 
 const getByToken = async (refreshToken: string) => {
-  return prisma.token.findUnique({ where: { refreshToken } });
+  return await prisma.token.findUnique({ where: { refreshToken } });
 };
 
 const remove = async (userId: string) => {

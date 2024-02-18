@@ -57,12 +57,15 @@ const login = async (req: Request, res: Response) => {
 const refresh = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
 
-  const user = jwtService.verifyRefresh(refreshToken);
+  const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
   const token = await tokenService.getByToken(refreshToken);
 
-  refreshSchema.parse(user ? { ...(user as JwtPayload), token } : {});
+  refreshSchema.parse({
+    userId: user.id,
+    token: token?.refreshToken,
+  });
 
-  generateTokens(res, user as User);
+  await generateTokens(res, user as User);
 };
 
 const generateTokens = async (res: Response, user: User) => {
@@ -88,7 +91,10 @@ const logout = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
   const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
 
-  refreshSchema.parse(user ? { ...(user as JwtPayload), refreshToken } : {});
+  refreshSchema.parse({
+    userId: user.id,
+    token: refreshToken,
+  });
 
   await tokenService.remove(user.id);
 
