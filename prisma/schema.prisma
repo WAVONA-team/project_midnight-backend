@@ -15,8 +15,9 @@ model Token {
 }
 
 model User {
-  id              String @id @default(uuid())
+  id              String  @id @default(uuid())
   activationToken String? @unique
+  resetToken      String? @unique
   refreshToken    Token?
 
   createdAt DateTime @default(now())
@@ -28,9 +29,10 @@ model User {
   spotifyOAUTH String?
   yandexOAUTH  String?
   vkOAUTH      String?
+  appleOAUTH   String?
 
   tracks   Track[]
-  Playlist Playlist?
+  playlists Playlist[]
 }
 
 model Track {

@@ -32,7 +32,25 @@ const sendActivationEmail = (email: string, token: string) => {
   return send({ email, subject: 'Activate', html });
 };
 
+const sendResetEmail = (email: string, token: string) => {
+  const html = `
+    <p>Your reset code is ${token}</p>
+  `;
+
+  return send({ email, subject: 'Reset', html });
+};
+
+const sendSuccessResetEmail = (email: string) => {
+  const html = `
+    <p>You have successfully reset your password</p>
+  `;
+
+  return send({ email, subject: 'Successfully reset', html });
+};
+
 export const emailService = {
   sendActivationEmail,
+  sendResetEmail,
+  sendSuccessResetEmail,
   send,
 };

@@ -3,7 +3,11 @@ import { User } from 'project_midnight';
 import prisma from '../client.js';
 
 import { registerSchema } from '../zodSchemas/user/index.js';
-import { userLoginSchema } from '../zodSchemas/auth/index.js';
+import {
+  userLoginSchema,
+  resetUserSchema,
+  resetVerifyUserSchema,
+} from '../zodSchemas/auth/index.js';
 
 import { emailService } from './email.service.js';
 import { userService } from './user.service.js';
@@ -17,8 +21,8 @@ const register = async (email: string, password: string) => {
     data: {
       activationToken,
 
-      email: email as string,
-      password: password as string,
+      email,
+      password,
 
       spotifyOAUTH: null,
       yandexOAUTH: null,
@@ -41,7 +45,42 @@ const activate = async (activationToken: string) => {
     data: { activationToken: null },
   });
 
-  return user;
+  return user as User;
+};
+
+const reset = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  resetUserSchema.parse(user || {});
+
+  const resetToken = uuidv4().slice(0, 6);
+
+  const updatedUser = await prisma.user.update({
+    where: { email },
+    data: { resetToken },
+  });
+
+  await emailService.sendResetEmail(email, resetToken);
+
+  return userService.normalize(updatedUser);
+};
+
+const resetVerify = async (resetToken: string, newPassword: string) => {
+  const user = await prisma.user.findUnique({ where: { resetToken } });
+
+  resetVerifyUserSchema.parse(user || {});
+
+  const updatedUser = await prisma.user.update({
+    where: { resetToken },
+    data: {
+      password: newPassword,
+      resetToken: null,
+    },
+  });
+
+  await emailService.sendSuccessResetEmail(updatedUser.email);
+
+  return userService.normalize(updatedUser);
 };
 
 const login = async () => {};
@@ -50,4 +89,6 @@ export const authService = {
   register,
   activate,
   login,
+  reset,
+  resetVerify,
 };

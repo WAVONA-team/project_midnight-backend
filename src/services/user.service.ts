@@ -1,22 +1,37 @@
-import { User } from 'project_midnight';
+import { User, NormalizedUser } from 'project_midnight';
 import prisma from '../client.js';
 import 'express-async-errors';
-
 
 const normalize = ({
   id,
   email,
   createdAt,
   updatedAt,
-}: Omit<User, 'refreshToken'>) => ({
+  spotifyOAUTH,
+  yandexOAUTH,
+  vkOAUTH,
+  appleOAUTH,
+  tracks,
+  playlists,
+}: User): NormalizedUser => ({
   id,
   email,
   createdAt,
   updatedAt,
+  spotifyOAUTH,
+  yandexOAUTH,
+  vkOAUTH,
+  appleOAUTH,
+  tracks,
+  playlists,
 });
 
 const getAll = async () => {
-  return await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    include: { tracks: true, playlists: true },
+  });
+
+  return users.map((user) => normalize(user));
 };
 
 const findByEmail = async (email: string) => {

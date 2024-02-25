@@ -11,6 +11,8 @@ import {
   loginSchema,
   userLoginSchema,
   refreshSchema,
+  resetSchema,
+  setPasswordSchema,
 } from '../zodSchemas/auth/index.js';
 
 import { userService } from '../services/user.service.js';
@@ -33,8 +35,9 @@ const activate = async (req: Request, res: Response) => {
   activateSchema.parse(req.params);
 
   const { activationToken } = req.params;
+  const user = await authService.activate(activationToken);
 
-  res.send(await authService.activate(activationToken));
+  await generateTokens(res, user);
 };
 
 const login = async (req: Request, res: Response) => {
@@ -69,7 +72,7 @@ const refresh = async (req: Request, res: Response) => {
 };
 
 const generateTokens = async (res: Response, user: User) => {
-  const normalizedUser = userService.normalize(user!);
+  const normalizedUser = userService.normalize(user);
 
   const accessToken = jwtService.sign(normalizedUser);
   const refreshAccessToken = jwtService.signRefresh(normalizedUser);
@@ -101,10 +104,34 @@ const logout = async (req: Request, res: Response) => {
   res.sendStatus(204);
 };
 
+const reset = async (req: Request, res: Response) => {
+  resetSchema.parse(req.body);
+
+  const { email } = req.body;
+
+  res.send(await authService.reset(email));
+};
+
+const resetActivate = async (req: Request, res: Response) => {
+  setPasswordSchema.parse({
+    ...req.body,
+    ...req.params,
+  });
+
+  const { resetToken } = req.params;
+  const { newPassword } = req.body;
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  res.send(await authService.resetVerify(resetToken, hashedPassword));
+};
+
 export const authController = {
   register,
   activate,
   login,
   refresh,
   logout,
+  reset,
+  resetActivate,
 };

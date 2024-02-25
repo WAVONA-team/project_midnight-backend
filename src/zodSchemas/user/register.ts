@@ -4,6 +4,7 @@ export const registerSchema = z
   .object({
     id: z.string().optional(),
     activationToken: z.string().optional().nullable(),
+    resetToken: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),
     email: z.string().optional(),
@@ -11,6 +12,7 @@ export const registerSchema = z
     spotifyOAUTH: z.string().optional().nullable(),
     yandexOAUTH: z.string().optional().nullable(),
     vkOAUTH: z.string().optional().nullable(),
+    appleOAUTH: z.string().optional().nullable(),
   })
   .refine((data) => !data.id, {
     message: 'User already exist!',
