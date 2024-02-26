@@ -13,6 +13,7 @@ import {
   refreshSchema,
   resetSchema,
   setPasswordSchema,
+  verifyResetTokenSchema,
 } from '../zodSchemas/auth/index.js';
 
 import { userService } from '../services/user.service.js';
@@ -112,6 +113,14 @@ const reset = async (req: Request, res: Response) => {
   res.send(await authService.reset(email));
 };
 
+const resetVerify = async (req: Request, res: Response) => {
+  verifyResetTokenSchema.parse(req.params);
+
+  const { resetToken } = req.params;
+
+  return res.send(await authService.resetVerify(resetToken));
+};
+
 const resetActivate = async (req: Request, res: Response) => {
   setPasswordSchema.parse({
     ...req.body,
@@ -123,7 +132,7 @@ const resetActivate = async (req: Request, res: Response) => {
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  res.send(await authService.resetVerify(resetToken, hashedPassword));
+  res.send(await authService.resetActivate(resetToken, hashedPassword));
 };
 
 export const authController = {
@@ -133,5 +142,6 @@ export const authController = {
   refresh,
   logout,
   reset,
+  resetVerify,
   resetActivate,
 };

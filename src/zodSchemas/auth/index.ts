@@ -7,4 +7,5 @@ export {
   resetUserSchema,
   setPasswordSchema,
   resetVerifyUserSchema,
+  verifyResetTokenSchema,
 } from './reset.js';

@@ -65,11 +65,15 @@ const reset = async (email: string) => {
   return userService.normalize(updatedUser);
 };
 
-const resetVerify = async (resetToken: string, newPassword: string) => {
+const resetVerify = async (resetToken: string) => {
   const user = await prisma.user.findUnique({ where: { resetToken } });
 
   resetVerifyUserSchema.parse(user || {});
 
+  return userService.normalize(user as User);
+};
+
+const resetActivate = async (resetToken: string, newPassword: string) => {
   const updatedUser = await prisma.user.update({
     where: { resetToken },
     data: {
@@ -91,4 +95,5 @@ export const authService = {
   login,
   reset,
   resetVerify,
+  resetActivate,
 };

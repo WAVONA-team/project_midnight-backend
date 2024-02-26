@@ -9,4 +9,5 @@ authRouter.post('/login', authController.login);
 authRouter.get('/refresh', authController.refresh);
 authRouter.post('/logout', authController.logout);
 authRouter.post('/reset', authController.reset);
+authRouter.get('/reset/:resetToken', authController.resetVerify);
 authRouter.patch('/reset/:resetToken', authController.resetActivate);

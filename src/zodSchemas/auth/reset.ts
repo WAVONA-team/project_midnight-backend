@@ -48,17 +48,20 @@ export const resetVerifyUserSchema = z
     message: 'Wrong reset code!',
   });
 
+export const verifyResetTokenSchema = z.object({
+  resetToken: z
+    .string()
+    .trim()
+    .refine((data) => data.length, {
+      message: 'Reset token is required',
+    })
+    .refine((data) => data.length === 6, {
+      message: 'Reset token must be 6 characters',
+    }),
+});
+
 export const setPasswordSchema = z
   .object({
-    resetToken: z
-      .string()
-      .trim()
-      .refine((data) => data.length, {
-        message: 'Reset token is required',
-      })
-      .refine((data) => data.length === 6, {
-        message: 'Reset token must be 6 characters',
-      }),
     newPassword: z
       .string()
       .trim()
