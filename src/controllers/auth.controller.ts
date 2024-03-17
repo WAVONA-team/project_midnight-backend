@@ -14,6 +14,7 @@ import {
   resetSchema,
   setPasswordSchema,
   verifyResetTokenSchema,
+  deleteSchema,
 } from '../zodSchemas/auth/index.js';
 
 import { userService } from '../services/user.service.js';
@@ -135,6 +136,40 @@ const resetActivate = async (req: Request, res: Response) => {
   res.send(await authService.resetActivate(resetToken, hashedPassword));
 };
 
+const deleteUser = async (req: Request, res: Response) => {
+  deleteSchema.parse(req.params);
+
+  const { email } = req.params;
+
+  await authService.deleteUser(email);
+
+  res.send(200);
+};
+
+const resend = async (req: Request, res: Response) => {
+  deleteSchema.parse(req.params);
+
+  const { email } = req.params;
+
+  res.send(await authService.resend(email));
+};
+
+const deleteResetToken = async (req: Request, res: Response) => {
+  deleteSchema.parse(req.params);
+
+  const { email } = req.params;
+
+  res.send(await authService.deleteResetToken(email));
+};
+
+const resendResetToken = async (req: Request, res: Response) => {
+  deleteSchema.parse(req.params);
+
+  const { email } = req.params;
+
+  res.send(await authService.resendResetToken(email));
+};
+
 export const authController = {
   register,
   activate,
@@ -144,4 +179,8 @@ export const authController = {
   reset,
   resetVerify,
   resetActivate,
+  deleteUser,
+  resend,
+  deleteResetToken,
+  resendResetToken,
 };

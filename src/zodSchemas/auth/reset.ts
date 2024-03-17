@@ -48,6 +48,24 @@ export const resetVerifyUserSchema = z
     message: 'Wrong reset code!',
   });
 
+export const resendUserSchema = z
+  .object({
+    id: z.string().optional(),
+    activationToken: z.string().optional().nullable(),
+    resetToken: z.string().optional().nullable(),
+    createdAt: z.coerce.date().optional(),
+    updatedAt: z.coerce.date().optional(),
+    email: z.string().optional(),
+    password: z.string().optional(),
+    spotifyOAUTH: z.string().optional().nullable(),
+    yandexOAUTH: z.string().optional().nullable(),
+    vkOAUTH: z.string().optional().nullable(),
+    appleOAUTH: z.string().optional().nullable(),
+  })
+  .refine(({ id }) => !!id, {
+    message: 'User does not exist!',
+  });
+
 export const verifyResetTokenSchema = z.object({
   resetToken: z
     .string()
@@ -79,6 +97,15 @@ export const setPasswordSchema = z
       })
       .min(6, {
         message: 'Confirmation password should be more than 6 characters',
+      }),
+    resetToken: z
+      .string()
+      .trim()
+      .min(1, {
+        message: 'Reset token is required',
+      })
+      .min(6, {
+        message: 'Reset token should be 6 characters length',
       }),
   })
   .refine(
