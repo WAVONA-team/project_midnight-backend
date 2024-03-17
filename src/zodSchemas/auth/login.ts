@@ -11,7 +11,7 @@ export const loginSchema = z
     async ({ password, confirmPassword }) =>
       await bcrypt.compare(confirmPassword, password),
     {
-      message: 'Wrong password!',
+      message: 'Неправильный пароль!',
       path: ['password'],
     },
   );
@@ -31,5 +31,5 @@ export const userLoginSchema = z
     appleOAUTH: z.string().optional().nullable(),
   })
   .refine((data) => data.id, {
-    message: 'User does not exists or wrong activation token',
+    message: 'Пользователь не найден или неправильный код активации',
   });
