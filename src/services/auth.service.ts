@@ -7,6 +7,7 @@ import {
   userLoginSchema,
   resetUserSchema,
   resetVerifyUserSchema,
+  resendUserSchema,
 } from '../zodSchemas/auth/index.js';
 
 import { emailService } from './email.service.js';
@@ -89,6 +90,47 @@ const resetActivate = async (resetToken: string, newPassword: string) => {
 
 const login = async () => {};
 
+const deleteUser = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  resetVerifyUserSchema.parse(user || {});
+
+  await prisma.user.delete({ where: { email } });
+};
+
+const resend = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  resendUserSchema.parse(user || {});
+
+  await emailService.sendActivationEmail(
+    email,
+    user?.activationToken as string,
+  );
+
+  return user?.activationToken;
+};
+
+const deleteResetToken = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  resendUserSchema.parse(user || {});
+
+  await prisma.user.update({ where: { email }, data: { resetToken: null } });
+
+  return user?.activationToken;
+};
+
+const resendResetToken = async (email: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  resendUserSchema.parse(user || {});
+
+  await emailService.sendResetEmail(email, user?.resetToken as string);
+
+  return user?.resetToken;
+};
+
 export const authService = {
   register,
   activate,
@@ -96,4 +138,8 @@ export const authService = {
   reset,
   resetVerify,
   resetActivate,
+  deleteUser,
+  resend,
+  deleteResetToken,
+  resendResetToken,
 };

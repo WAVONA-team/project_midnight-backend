@@ -5,6 +5,6 @@ export const activateSchema = z.object({
     .string()
     .trim()
     .refine(data => data.length, {
-      message: 'Activation token is required',
+      message: 'Введите код активации',
     }),
 });
