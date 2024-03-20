@@ -5,18 +5,18 @@ export const authSchema = z.object({
     .string()
     .trim()
     .min(1, {
-      message: 'Email is required',
+      message: 'Введите email',
     })
     .email({
-      message: 'Invalid email address',
+      message: 'Неверный формат. Пример: example@domain.com',
     }),
   password: z
     .string()
     .trim()
     .min(1, {
-      message: 'Password is required',
+      message: 'Введите пароль',
     })
     .min(6, {
-      message: 'Password should be more than 6 characters',
+      message: 'Пароль должен быть не менее 6-ти символов',
     }),
 });
