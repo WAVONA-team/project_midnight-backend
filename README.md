@@ -5,9 +5,10 @@
 ## Endpoints
 
 - `tracks`
-  | Name | Method | Request | Response |
-  |-------|--------|----------------------------------------------------------------------|--------------------------------------------------------------------|
-  | `new` | `POST` | `{ url: string, userId: string }` | `Track` type from `project_midnight` (lib) |
+<br>
+  | Name | Method | Request | Response | Description |
+  |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
+  | `new` | `POST` | - `{ url: string, userId: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
 
 ## How to run localy
 
