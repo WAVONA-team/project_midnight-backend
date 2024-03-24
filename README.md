@@ -5,7 +5,7 @@
 ## Endpoints
 
 - `tracks`
-<br>
+  <br>
   | Name | Method | Request | Response | Description |
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
   | `new` | `POST` | - `{ url: string, userId: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
