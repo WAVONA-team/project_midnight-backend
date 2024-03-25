@@ -14,6 +14,28 @@ type OembedTrack = {
   provider_name: string;
 };
 
+type SpotifyTrack = {
+  name: string;
+  artists: SpotifyArtists[];
+  album: ThumbnailUrl;
+  id: string;
+  external_urls: Record<'spotify', string>;
+};
+
+type SpotifyArtists = {
+  name: string;
+};
+
+type ThumbnailUrl = {
+  images: Record<'url', string>[];
+};
+
+type SpotifyRefresh = {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+};
+
 const getYoutubeId = (url: string) => {
   const regex =
     /(?:youtube(?:-nocookie)?\.com\/(?:[^\\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -27,6 +49,41 @@ const getSoundCloudTrackId = (url: string) => {
   return url.match(regex)?.[1] || null;
 };
 
+const getSpotifyTrackId = (url: string) => {
+  const regex = /(?:spotify\.com\/track\/)([a-zA-Z0-9]+)/;
+
+  return url.match(regex)?.[1] || null;
+};
+
+const spotifyRefresh = async (refreshToken: string, userId: string) => {
+  return axios
+    .post<SpotifyRefresh>(
+      'https://accounts.spotify.com/api/token',
+      new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64')}`,
+        },
+      },
+    )
+    .then(async (res) => {
+      const { access_token } = res.data;
+
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          spotifyOAUTH: access_token,
+        },
+      });
+    });
+};
+
 const checkExistingTrack = async (urlId: string, userId: string) => {
   const track = await prisma.track.findUnique({
     where: { userId, urlId },
@@ -37,7 +94,11 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
   return error;
 };
 
-const makeTrackRequest = async (url: string, urlId: string, userId: string) => {
+const getOembedTrackInfo = async (
+  url: string,
+  urlId: string,
+  userId: string,
+) => {
   return axios
     .get<OembedTrack>(url)
     .then(async (res) => {
@@ -58,6 +119,37 @@ const makeTrackRequest = async (url: string, urlId: string, userId: string) => {
     .catch(() => trackParsingError.parse(''));
 };
 
+const getSpotifyTrackInfo = async (
+  url: string,
+  accessToken: string,
+  userId: string,
+) => {
+  console.log(url);
+
+  return axios
+    .get<SpotifyTrack>(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(async (res) => {
+      const { name, artists, album, id, external_urls } = res.data;
+
+      return await prisma.track.create({
+        data: {
+          title: name,
+          url: external_urls.spotify,
+          urlId: id,
+          imgUrl: album.images[0].url,
+          author: artists[0].name,
+          userId,
+          source: 'Spotify',
+        },
+      });
+    })
+    .catch(() => trackParsingError.parse(''));
+};
+
 const createTrack = async (url: string, userId: string) => {
   switch (true) {
     case url.includes('youtube') || url.includes('youtu.be'): {
@@ -65,7 +157,7 @@ const createTrack = async (url: string, userId: string) => {
 
       await checkExistingTrack(urlId, userId);
 
-      return makeTrackRequest(
+      return getOembedTrackInfo(
         `https://www.youtube.com/oembed?url=${url}&format=json`,
         urlId,
         userId,
@@ -77,9 +169,25 @@ const createTrack = async (url: string, userId: string) => {
 
       await checkExistingTrack(urlId, userId);
 
-      return makeTrackRequest(
+      return getOembedTrackInfo(
         `https://soundcloud.com/oembed?format=json&url=${url}`,
         urlId,
+        userId,
+      );
+    }
+
+    case url.includes('spotify'): {
+      const urlId = getSpotifyTrackId(url) || '';
+
+      await checkExistingTrack(urlId, userId);
+
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+
+      await spotifyRefresh(user?.spotifyRefresh as string, userId);
+
+      return getSpotifyTrackInfo(
+        `https://api.spotify.com/v1/tracks/${urlId}`,
+        user?.spotifyOAUTH as string,
         userId,
       );
     }
