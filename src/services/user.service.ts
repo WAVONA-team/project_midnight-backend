@@ -1,6 +1,7 @@
 import { User, NormalizedUser } from 'project_midnight';
 import prisma from '../client.js';
 import 'express-async-errors';
+import { checkExistingUser } from '../zodSchemas/user/index.js';
 
 const normalize = ({
   id,
@@ -42,8 +43,25 @@ const findByEmail = async (email: string) => {
   });
 };
 
+const removeSpotify = async (userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  checkExistingUser.parse(user?.id || '');
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      spotifyOAUTH: null,
+      spotifyRefresh: null,
+    },
+  });
+};
+
 export const userService = {
   normalize,
   getAll,
   findByEmail,
+  removeSpotify,
 };
