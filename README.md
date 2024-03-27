@@ -8,7 +8,7 @@
   <br>
   | Name | Method | Request | Response | Description |
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
-  | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `200` | Remove connected app |
+  | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` from library | Remove connected app |
 
 ## How to run localy
 
