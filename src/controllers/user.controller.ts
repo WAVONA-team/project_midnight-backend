@@ -1,17 +1,11 @@
 /* eslint-disable indent */
 import { type Request, type Response } from 'express';
 import { userService } from '../services/user.service.js';
-import { NormalizedUser } from 'project_midnight';
+import { User } from 'project_midnight';
 import {
   removeAppSchema,
   incorrectAppSchema,
 } from '../zodSchemas/user/index.js';
-
-const getAll = async (_req: Request, res: Response) => {
-  const users: NormalizedUser[] = await userService.getAll();
-
-  res.send(users);
-};
 
 const removeApp = async (req: Request, res: Response) => {
   removeAppSchema.parse(req.body);
@@ -22,7 +16,9 @@ const removeApp = async (req: Request, res: Response) => {
     case 'Spotify': {
       await userService.removeSpotify(userId);
 
-      return res.send(200);
+      const user = await userService.findById(userId);
+
+      return res.send(userService.normalize(user as User));
     }
 
     default: {
@@ -32,6 +28,5 @@ const removeApp = async (req: Request, res: Response) => {
 };
 
 export const userController = {
-  getAll,
   removeApp,
 };

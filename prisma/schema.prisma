@@ -26,12 +26,13 @@ model User {
   email    String @unique
   password String
 
-  spotifyOAUTH String?
-  yandexOAUTH  String?
-  vkOAUTH      String?
-  appleOAUTH   String?
+  spotifyOAUTH   String?
+  spotifyRefresh String?
+  yandexOAUTH    String?
+  vkOAUTH        String?
+  appleOAUTH     String?
 
-  tracks   Track[]
+  tracks    Track[]
   playlists Playlist[]
 }
 

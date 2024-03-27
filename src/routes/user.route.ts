@@ -4,5 +4,4 @@ import { authMiddleware } from '../middlewares/index.js';
 
 export const userRouter = express.Router();
 
-userRouter.get('/', authMiddleware, userController.getAll);
 userRouter.patch('/remove-app', authMiddleware, userController.removeApp);

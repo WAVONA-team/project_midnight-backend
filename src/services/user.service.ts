@@ -9,6 +9,7 @@ const normalize = ({
   createdAt,
   updatedAt,
   spotifyOAUTH,
+  spotifyRefresh,
   yandexOAUTH,
   vkOAUTH,
   appleOAUTH,
@@ -20,6 +21,7 @@ const normalize = ({
   createdAt,
   updatedAt,
   spotifyOAUTH,
+  spotifyRefresh,
   yandexOAUTH,
   vkOAUTH,
   appleOAUTH,
@@ -27,18 +29,18 @@ const normalize = ({
   playlists,
 });
 
-const getAll = async () => {
-  const users = await prisma.user.findMany({
-    include: { tracks: true, playlists: true },
-  });
-
-  return users.map((user) => normalize(user));
-};
-
 const findByEmail = async (email: string) => {
   return await prisma.user.findUnique({
     where: {
       email,
+    },
+  });
+};
+
+const findById = async (id: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      id,
     },
   });
 };
@@ -61,7 +63,7 @@ const removeSpotify = async (userId: string) => {
 
 export const userService = {
   normalize,
-  getAll,
   findByEmail,
+  findById,
   removeSpotify,
 };

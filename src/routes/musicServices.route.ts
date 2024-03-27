@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import express, { type Request, type Response } from 'express';
 import { type JwtPayload } from 'jsonwebtoken';
+import { User } from 'project_midnight';
+import prisma from '../client.js';
 
 import passport from 'passport';
 import { Strategy, VerifyCallback, type Profile } from 'passport-spotify';
 
-import prisma from '../client.js';
 import { jwtService } from '../services/jwt.service.js';
+import { userService } from '../services/user.service.js';
+import { tokenService } from '../services/token.service.js';
 
 export const musicServicesRouter = express.Router();
 
@@ -27,11 +30,11 @@ passport.use(
       done: VerifyCallback,
     ) => {
       const { refreshToken } = req.cookies;
-      const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+      const jwtUser = jwtService.verifyRefresh(refreshToken) as JwtPayload;
 
       await prisma.user.update({
         where: {
-          id: user.id,
+          id: jwtUser.id,
         },
         data: {
           spotifyOAUTH: profile.id,
@@ -43,14 +46,18 @@ passport.use(
   ),
 );
 
-musicServicesRouter.get(
-  '/auth/spotify',
-  passport.authenticate('spotify'),
-);
+musicServicesRouter.get('/auth/spotify', passport.authenticate('spotify'));
 
 musicServicesRouter.get(
   '/auth/spotify/callback',
   passport.authenticate('spotify'),
-  (_req: Request, res: Response) =>
-    res.redirect(process.env.CLIENT_HOST as string),
+  async (req: Request, res: Response) => {
+    const { refreshToken } = req.cookies;
+
+    const token = await tokenService.getByToken(refreshToken);
+    const user = await userService.findById(token?.userId as string);
+
+    res.redirect(`${process.env.CLIENT_HOST as string}/tracks`);
+    // res.send(userService.normalize(user as User));
+  },
 );
