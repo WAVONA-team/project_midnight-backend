@@ -8,7 +8,7 @@
   <br>
   | Name | Method | Request | Response | Description |
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
-  | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` from library | Remove connected app |
+  | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` type from `project_midnight` (lib) | Remove connected app |
 - `track`
   <br>
   | Name | Method | Request | Response | Description |
