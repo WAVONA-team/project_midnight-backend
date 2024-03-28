@@ -20,21 +20,22 @@ passport.use(
     },
     async (
       req: Request,
-      _accessToken: string,
-      _refreshToken: string,
+      accessToken: string,
+      refreshToken: string,
       _expires_in: number,
       profile: Profile,
       done: VerifyCallback,
     ) => {
-      const { refreshToken } = req.cookies;
-      const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+      const { refreshToken: jwtRefreshToken } = req.cookies;
+      const user = jwtService.verifyRefresh(jwtRefreshToken) as JwtPayload;
 
       await prisma.user.update({
         where: {
           id: user.id,
         },
         data: {
-          spotifyOAUTH: profile.id,
+          spotifyOAUTH: accessToken,
+          spotifyRefresh: refreshToken,
         },
       });
 
@@ -43,10 +44,7 @@ passport.use(
   ),
 );
 
-musicServicesRouter.get(
-  '/auth/spotify',
-  passport.authenticate('spotify'),
-);
+musicServicesRouter.get('/auth/spotify', passport.authenticate('spotify'));
 
 musicServicesRouter.get(
   '/auth/spotify/callback',

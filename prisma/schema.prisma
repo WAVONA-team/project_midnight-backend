@@ -26,23 +26,26 @@ model User {
   email    String @unique
   password String
 
-  spotifyOAUTH String?
-  yandexOAUTH  String?
-  vkOAUTH      String?
-  appleOAUTH   String?
+  spotifyOAUTH   String?
+  spotifyRefresh String?
+  yandexOAUTH    String?
+  vkOAUTH        String?
+  appleOAUTH     String?
 
-  tracks   Track[]
+  tracks    Track[]
   playlists Playlist[]
 }
 
 model Track {
   id     String @id @default(uuid())
-  userId String @unique
+  userId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  title  String
   url    String
+  urlId  String  @unique
   imgUrl String?
   author String?
   source String

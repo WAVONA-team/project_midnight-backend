@@ -42,8 +42,17 @@ const findByEmail = async (email: string) => {
   });
 };
 
+const getById = async (id: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+};
+
 export const userService = {
   normalize,
   getAll,
   findByEmail,
+  getById,
 };
