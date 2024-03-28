@@ -16,7 +16,7 @@ const removeApp = async (req: Request, res: Response) => {
     case 'Spotify': {
       await userService.removeSpotify(userId);
 
-      const user = await userService.findById(userId);
+      const user = await userService.getById(userId);
 
       return res.send(userService.normalize(user as User));
     }
