@@ -9,6 +9,11 @@
   | Name | Method | Request | Response | Description |
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
   | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` from library | Remove connected app |
+- `track`
+  <br>
+  | Name | Method | Request | Response | Description |
+  |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
+  | `new` | `POST` | - `{ url: string, userId: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
 
 ## How to run localy
 

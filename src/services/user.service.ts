@@ -37,7 +37,7 @@ const findByEmail = async (email: string) => {
   });
 };
 
-const findById = async (id: string) => {
+const getById = async (id: string) => {
   return await prisma.user.findUnique({
     where: {
       id,
@@ -64,6 +64,6 @@ const removeSpotify = async (userId: string) => {
 export const userService = {
   normalize,
   findByEmail,
-  findById,
+  getById,
   removeSpotify,
 };
