@@ -20,3 +20,7 @@ export const trackParsingError = z.string().trim().min(1, {
 export const unsupportedTrackSchema = z.string().trim().min(1, {
   message: 'К сожалению, на данный момент этот источник не поддерживается',
 });
+
+export const unauthorizedSpotifySchema = z.string().trim().min(1, {
+  message: 'Для выполнения этой операции необходима авторизация в spotify',
+});

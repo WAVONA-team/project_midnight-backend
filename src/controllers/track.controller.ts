@@ -4,6 +4,7 @@ import { trackService } from '../services/track.service.js';
 import {
   createTrackSchema,
   unsupportedTrackSchema,
+  unauthorizedSpotifySchema,
 } from '../zodSchemas/track/index.js';
 import { userService } from '../services/user.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
@@ -49,10 +50,9 @@ const create = async (req: Request, res: Response) => {
 
       const user = await userService.getById(userId);
 
-      await musicServicesService.spotifyRefresh(
-        user?.spotifyRefresh as string,
-        userId,
-      );
+      await musicServicesService
+        .spotifyRefresh(user?.spotifyRefresh as string, userId)
+        .catch(() => unauthorizedSpotifySchema.parse(''));
 
       return res.send(
         await trackService.getSpotifyTrackInfo(

@@ -3,4 +3,5 @@ export {
   checkExistingTrackSchema,
   trackParsingError,
   unsupportedTrackSchema,
+  unauthorizedSpotifySchema,
 } from './create.js';

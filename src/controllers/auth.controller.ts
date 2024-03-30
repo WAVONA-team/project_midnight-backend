@@ -21,6 +21,7 @@ import { userService } from '../services/user.service.js';
 import { jwtService } from '../services/jwt.service.js';
 import { authService } from '../services/auth.service.js';
 import { tokenService } from '../services/token.service.js';
+import { musicServicesService } from '../services/musicServices.service.js';
 
 const register = async (req: Request, res: Response) => {
   authSchema.parse(req.body);
@@ -65,12 +66,18 @@ const refresh = async (req: Request, res: Response) => {
   const jwtUser = jwtService.verifyRefresh(refreshToken) as JwtPayload;
   const token = await tokenService.getByToken(refreshToken);
 
+  const user = await userService.getById(jwtUser.id);
+
   refreshSchema.parse({
-    userId: jwtUser.id,
+    userId: user?.id,
     token: token?.refreshToken,
   });
 
-  await generateTokens(res, jwtUser as User);
+  if (user?.spotifyRefresh) {
+    await musicServicesService.spotifyRefresh(user.spotifyRefresh, user.id);
+  }
+
+  await generateTokens(res, user as User);
 };
 
 const generateTokens = async (res: Response, user: User) => {
