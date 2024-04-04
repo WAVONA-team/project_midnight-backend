@@ -21,7 +21,7 @@ const create = async (req: Request, res: Response) => {
       await trackService.checkExistingTrack(urlId, userId);
 
       return res.send(
-        await trackService.getOembedTrackInfo(
+        await trackService.createOembedTrack(
           `https://www.youtube.com/oembed?url=${url}&format=json`,
           urlId,
           userId,
@@ -35,8 +35,8 @@ const create = async (req: Request, res: Response) => {
       await trackService.checkExistingTrack(urlId, userId);
 
       return res.send(
-        await trackService.getOembedTrackInfo(
-          `https://soundcloud.com/oembed?format=json&url=${url}`,
+        await trackService.createOembedTrack(
+          `https://soundcloud.com/oembed?url=${url}&format=json`,
           urlId,
           userId,
         ),
@@ -55,7 +55,7 @@ const create = async (req: Request, res: Response) => {
         .catch(() => unauthorizedSpotifySchema.parse(''));
 
       return res.send(
-        await trackService.getSpotifyTrackInfo(
+        await trackService.createSpotifyTrack(
           `https://api.spotify.com/v1/tracks/${urlId}`,
           user?.spotifyOAUTH as string,
           userId,
@@ -69,6 +69,52 @@ const create = async (req: Request, res: Response) => {
   }
 };
 
+const getInfo = async (req: Request, res: Response) => {
+  createTrackSchema.parse(req.body);
+
+  const { url, userId } = req.body;
+
+  switch (true) {
+    case url.includes('youtube') || url.includes('youtu.be'): {
+      return res.send(
+        await trackService.getOembedTrackInfo(
+          `https://www.youtube.com/oembed?url=${url}&format=json`,
+        ),
+      );
+    }
+
+    case url.includes('soundcloud'): {
+      return res.send(
+        await trackService.getOembedTrackInfo(
+          `https://soundcloud.com/oembed?url=${url}&format=json`,
+        ),
+      );
+    }
+
+    case url.includes('spotify'): {
+      const urlId = trackService.getSpotifyTrackId(url) || '';
+
+      const user = await userService.getById(userId);
+
+      await musicServicesService
+        .spotifyRefresh(user?.spotifyRefresh as string, user?.id as string)
+        .catch(() => unauthorizedSpotifySchema.parse(''));
+
+      return res.send(
+        await trackService.getSpotifyTrackInfo(
+          `https://api.spotify.com/v1/tracks/${urlId}`,
+          user?.spotifyOAUTH as string,
+        ),
+      );
+    }
+
+    default: {
+      return unsupportedTrackSchema.parse('');
+    }
+  }
+};
+
 export const trackController = {
   create,
+  getInfo,
 };

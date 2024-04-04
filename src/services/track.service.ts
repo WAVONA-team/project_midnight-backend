@@ -36,65 +36,97 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
   return error;
 };
 
-const getOembedTrackInfo = async (
-  url: string,
-  urlId: string,
-  userId: string,
-) => {
-  return axios
-    .get<OembedTrack>(url)
-    .then(async (res) => {
+const getOembedTrackInfo = async (oembedUrl: string) => {
+  return await axios
+    .get<OembedTrack>(oembedUrl)
+    .then((res) => {
       const { title, author_name, thumbnail_url, provider_name } = res.data;
 
-      return await prisma.track.create({
-        data: {
-          title,
-          url,
-          urlId,
-          imgUrl: thumbnail_url,
-          author: author_name,
-          userId,
-          source: provider_name,
-        },
-      });
+      return {
+        title,
+        author: author_name,
+        imgUrl: thumbnail_url,
+        source: provider_name,
+        url: oembedUrl.split('&')[0].split('url=')[1],
+      };
     })
     .catch(() => trackParsingError.parse(''));
 };
 
-const getSpotifyTrackInfo = async (
+const createOembedTrack = async (
   url: string,
-  accessToken: string,
+  urlId: string,
   userId: string,
 ) => {
-  return axios
+  return await getOembedTrackInfo(url).then(
+    // @ts-expect-error: "Must be object, but ts thinks that this is could be also string"
+    async ({ title, imgUrl, author, source }) =>
+      await prisma.track.create({
+        data: {
+          title,
+          url,
+          urlId,
+          imgUrl,
+          author,
+          userId,
+          source,
+        },
+      }),
+  );
+};
+
+const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
+  return await axios
     .get<SpotifyTrack>(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
     .then(async (res) => {
-      const { name, artists, album, id, external_urls } = res.data;
+      const { name, artists, album, external_urls, id } = res.data;
 
+      return {
+        title: name,
+        author: artists[0].name,
+        imgUrl: album.images[0].url,
+        source: 'Spotify',
+        url: external_urls.spotify,
+        urlId: id,
+      };
+    })
+    .catch(() => trackParsingError.parse(''));
+};
+
+const createSpotifyTrack = async (
+  url: string,
+  accessToken: string,
+  userId: string,
+) => {
+  return await getSpotifyTrackInfo(url, accessToken).then(
+    // @ts-expect-error: "Must be object, but ts thinks that this is could be also string"
+    async ({ title, url, urlId, imgUrl, author }) => {
       return await prisma.track.create({
         data: {
-          title: name,
-          url: external_urls.spotify,
-          urlId: id,
-          imgUrl: album.images[0].url,
-          author: artists[0].name,
+          title,
+          url,
+          urlId,
+          imgUrl,
+          author,
           userId,
           source: 'Spotify',
         },
       });
-    })
-    .catch(() => trackParsingError.parse(''));
+    },
+  );
 };
 
 export const trackService = {
   getYoutubeId,
   checkExistingTrack,
   getOembedTrackInfo,
+  createOembedTrack,
   getSoundCloudTrackId,
   getSpotifyTrackId,
   getSpotifyTrackInfo,
+  createSpotifyTrack,
 };
