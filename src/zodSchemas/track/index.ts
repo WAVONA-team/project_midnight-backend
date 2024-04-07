@@ -1,5 +1,6 @@
 export {
   createTrackSchema,
+  getTrackInfoSchema,
   checkExistingTrackSchema,
   trackParsingError,
   unsupportedTrackSchema,

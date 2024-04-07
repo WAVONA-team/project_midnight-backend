@@ -9,11 +9,12 @@
   | Name | Method | Request | Response | Description |
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
   | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` type from `project_midnight` (lib) | Remove connected app |
+  | `search-history` | `GET` | - `{ userId: string }` - Request params | `Track`[] type from `project_midnight` (lib) | Get user search history |
 - `track`
   <br>
   | Name | Method | Request | Response | Description |
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
-  | `new` | `POST` | - `{ url: string, userId: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
+  | `new` | `POST` | - `{ userId: string, title: string, url: string, urlId: string, imgUrl: string, author: string, source: string, duration: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
   | `get-info` | `POST` | - `{ url: string, userId: string }` - Request body | `{ title: string, author: string, imgUrl: string, source: string, url: string, urlId: string }` | Get track info |
 
 ## How to run localy

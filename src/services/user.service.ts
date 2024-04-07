@@ -42,6 +42,11 @@ const getById = async (id: string) => {
     where: {
       id,
     },
+    include: {
+      tracks: true,
+      playlists: true,
+      searchHistory: true,
+    },
   });
 };
 

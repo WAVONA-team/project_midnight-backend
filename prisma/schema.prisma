@@ -32,26 +32,30 @@ model User {
   vkOAUTH        String?
   appleOAUTH     String?
 
-  tracks    Track[]
-  playlists Playlist[]
+  tracks        Track[]    @relation("userTracks")
+  searchHistory Track[]    @relation("userSearchHistory")
+  playlists     Playlist[]
 }
 
 model Track {
-  id     String @id @default(uuid())
-  userId String
+  id                  String @id @default(uuid())
+  userIdTracks        String
+  userIdSearchHistory String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title  String
-  url    String
-  urlId  String  @unique
-  imgUrl String?
-  author String?
-  source String
+  title    String
+  url      String
+  urlId    String  @unique
+  imgUrl   String?
+  author   String?
+  source   String
+  duration String
 
-  playlist Playlist[]
-  user     User       @relation(fields: [userId], references: [id])
+  playlist          Playlist[]
+  userTracks        User?      @relation("userTracks", fields: [userIdTracks], references: [id])
+  userSearchHistory User?      @relation("userSearchHistory", fields: [userIdSearchHistory], references: [id])
 }
 
 model Playlist {
