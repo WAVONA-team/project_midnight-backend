@@ -5,6 +5,8 @@ import { User } from 'project_midnight';
 import {
   removeAppSchema,
   incorrectAppSchema,
+  getSearchHistorySchema,
+  checkExistingUser,
 } from '../zodSchemas/user/index.js';
 
 const removeApp = async (req: Request, res: Response) => {
@@ -27,6 +29,21 @@ const removeApp = async (req: Request, res: Response) => {
   }
 };
 
+const getSearchHistory = async (req: Request, res: Response) => {
+  getSearchHistorySchema.parse(req.params);
+
+  const { userId } = req.params;
+
+  const user = await userService.getById(userId);
+
+  if (!user) {
+    checkExistingUser.parse('');
+  }
+
+  res.send(user?.searchHistory);
+};
+
 export const userController = {
   removeApp,
+  getSearchHistory,
 };
