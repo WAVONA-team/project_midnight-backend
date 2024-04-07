@@ -26,6 +26,8 @@ const getInfo = async (req: Request, res: Response) => {
       return res.send(
         await trackService.getOembedTrackInfo(
           `https://www.youtube.com/oembed?url=${url}&format=json`,
+          url,
+          userId,
         ),
       );
     }
@@ -34,6 +36,8 @@ const getInfo = async (req: Request, res: Response) => {
       return res.send(
         await trackService.getOembedTrackInfo(
           `https://soundcloud.com/oembed?url=${url}&format=json`,
+          url,
+          userId,
         ),
       );
     }
@@ -51,6 +55,7 @@ const getInfo = async (req: Request, res: Response) => {
         await trackService.getSpotifyTrackInfo(
           `https://api.spotify.com/v1/tracks/${urlId}`,
           user?.spotifyOAUTH as string,
+          user?.id as string,
         ),
       );
     }

@@ -1,6 +1,5 @@
 /* eslint-disable indent */
 import axios from 'axios';
-import { Track } from 'project_midnight';
 import prisma from '../client.js';
 import {
   checkExistingTrackSchema,
@@ -8,6 +7,17 @@ import {
   unsupportedTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { SpotifyTrack, OembedTrack } from '../types/track/index.js';
+
+type TrackToCreate = {
+  userId: string;
+  title: string;
+  url: string;
+  urlId: string;
+  imgUrl: string;
+  author: string;
+  source: string;
+  duration: string;
+};
 
 const createTrack = async ({
   userId,
@@ -18,23 +28,24 @@ const createTrack = async ({
   author,
   source,
   duration,
-}: Track) => {
+}: TrackToCreate) => {
   await checkExistingTrack(urlId, userId);
 
-  const newTrack = {
-    userId,
-    title,
-    url,
-    urlId,
-    imgUrl,
-    author,
-    source,
-    duration,
-  };
-
-  return await prisma.track.create({
-    data: newTrack,
+  const newTrack = await prisma.track.create({
+    data: {
+      userIdTracks: userId,
+      userIdSearchHistory: userId,
+      title,
+      url,
+      urlId,
+      imgUrl,
+      author,
+      source,
+      duration,
+    },
   });
+
+  return newTrack;
 };
 
 const getTrackId = (url: string) => {
@@ -66,17 +77,53 @@ const getTrackId = (url: string) => {
 
 const checkExistingTrack = async (urlId: string, userId: string) => {
   const track = await prisma.track.findUnique({
-    where: { userId, urlId },
+    where: { userIdTracks: userId, urlId },
   });
 
   return checkExistingTrackSchema.parse(track?.id || '');
 };
 
-const getOembedTrackInfo = async (oembedUrl: string) => {
+const getOembedTrackInfo = async (
+  oembedUrl: string,
+  url: string,
+  userId: string,
+) => {
   return await axios
     .get<OembedTrack>(oembedUrl)
-    .then((res) => {
+    .then(async (res) => {
       const { title, author_name, thumbnail_url, provider_name } = res.data;
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { searchHistory: true },
+      });
+
+      const newTrack = await prisma.track.create({
+        data: {
+          userIdTracks: userId,
+          userIdSearchHistory: userId,
+          title,
+          url: oembedUrl.split('&')[0].split('url=')[1],
+          urlId: getTrackId(url) as string,
+          imgUrl: thumbnail_url,
+          author: author_name,
+          source: provider_name,
+          duration: '',
+        },
+      });
+
+      user?.searchHistory.unshift(newTrack);
+
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          searchHistory: {
+            set: user?.searchHistory,
+          },
+        },
+      });
 
       return {
         title,
@@ -89,7 +136,11 @@ const getOembedTrackInfo = async (oembedUrl: string) => {
     .catch(() => trackParsingError.parse(''));
 };
 
-const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
+const getSpotifyTrackInfo = async (
+  url: string,
+  accessToken: string,
+  userId: string,
+) => {
   return await axios
     .get<SpotifyTrack>(url, {
       headers: {
@@ -98,6 +149,38 @@ const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
     })
     .then(async (res) => {
       const { name, artists, album, external_urls, id } = res.data;
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { searchHistory: true },
+      });
+
+      const newTrack = await prisma.track.create({
+        data: {
+          userIdTracks: userId,
+          userIdSearchHistory: userId,
+          title: name,
+          url: external_urls.spotify,
+          urlId: id,
+          imgUrl: album.images[0].url,
+          author: artists[0].name,
+          source: 'Spotify',
+          duration: '',
+        },
+      });
+
+      user?.searchHistory.unshift(newTrack);
+
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          searchHistory: {
+            set: user?.searchHistory,
+          },
+        },
+      });
 
       return {
         title: name,
