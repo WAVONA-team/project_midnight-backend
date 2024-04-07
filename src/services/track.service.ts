@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 import axios from 'axios';
+import { Track } from 'project_midnight';
 import prisma from '../client.js';
 import {
   checkExistingTrackSchema,
@@ -83,6 +84,26 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
   return checkExistingTrackSchema.parse(track?.id || '');
 };
 
+const createSearchHistory = async (userId: string, newTrack: Track) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { searchHistory: true },
+  });
+
+  user?.searchHistory.unshift(newTrack);
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      searchHistory: {
+        set: user?.searchHistory,
+      },
+    },
+  });
+};
+
 const getOembedTrackInfo = async (
   oembedUrl: string,
   url: string,
@@ -92,11 +113,6 @@ const getOembedTrackInfo = async (
     .get<OembedTrack>(oembedUrl)
     .then(async (res) => {
       const { title, author_name, thumbnail_url, provider_name } = res.data;
-
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { searchHistory: true },
-      });
 
       const newTrack = await prisma.track.create({
         data: {
@@ -112,18 +128,7 @@ const getOembedTrackInfo = async (
         },
       });
 
-      user?.searchHistory.unshift(newTrack);
-
-      await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          searchHistory: {
-            set: user?.searchHistory,
-          },
-        },
-      });
+      await createSearchHistory(userId, newTrack);
 
       return {
         title,
@@ -150,11 +155,6 @@ const getSpotifyTrackInfo = async (
     .then(async (res) => {
       const { name, artists, album, external_urls, id } = res.data;
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: { searchHistory: true },
-      });
-
       const newTrack = await prisma.track.create({
         data: {
           userIdTracks: userId,
@@ -169,18 +169,7 @@ const getSpotifyTrackInfo = async (
         },
       });
 
-      user?.searchHistory.unshift(newTrack);
-
-      await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          searchHistory: {
-            set: user?.searchHistory,
-          },
-        },
-      });
+      await createSearchHistory(userId, newTrack);
 
       return {
         title: name,
