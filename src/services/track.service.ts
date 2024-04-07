@@ -1,29 +1,67 @@
 /* eslint-disable indent */
 import axios from 'axios';
+import { Track } from 'project_midnight';
 import prisma from '../client.js';
 import {
   checkExistingTrackSchema,
   trackParsingError,
+  unsupportedTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { SpotifyTrack, OembedTrack } from '../types/track/index.js';
 
-const getYoutubeId = (url: string) => {
-  const regex =
-    /(?:youtube(?:-nocookie)?\.com\/(?:[^\\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+const createTrack = async ({
+  userId,
+  title,
+  url,
+  urlId,
+  imgUrl,
+  author,
+  source,
+  duration,
+}: Track) => {
+  await checkExistingTrack(urlId, userId);
 
-  return url.match(regex)?.[1] || null;
+  const newTrack = {
+    userId,
+    title,
+    url,
+    urlId,
+    imgUrl,
+    author,
+    source,
+    duration,
+  };
+
+  return await prisma.track.create({
+    data: newTrack,
+  });
 };
 
-const getSoundCloudTrackId = (url: string) => {
-  const regex = /(?:soundcloud\.com\/\S+\/)([^/?]+)/;
+const getTrackId = (url: string) => {
+  switch (true) {
+    case url.includes('youtube') || url.includes('youtu.be'): {
+      const regex =
+        /(?:youtube(?:-nocookie)?\.com\/(?:[^\\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
-  return url.match(regex)?.[1] || null;
-};
+      return url.match(regex)?.[1] || null;
+    }
 
-const getSpotifyTrackId = (url: string) => {
-  const regex = /(?:spotify\.com\/track\/)([a-zA-Z0-9]+)/;
+    case url.includes('soundcloud'): {
+      const regex = /(?:soundcloud\.com\/\S+\/)([^/?]+)/;
 
-  return url.match(regex)?.[1] || null;
+      return url.match(regex)?.[1] || null;
+    }
+
+    case url.includes('spotify'): {
+      const regex = /(?:spotify\.com\/track\/)([a-zA-Z0-9]+)/;
+
+      return url.match(regex)?.[1] || null;
+    }
+
+    default: {
+      return unsupportedTrackSchema.parse('');
+    }
+  }
 };
 
 const checkExistingTrack = async (urlId: string, userId: string) => {
@@ -31,9 +69,7 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
     where: { userId, urlId },
   });
 
-  const error = checkExistingTrackSchema.parse(track?.id || '');
-
-  return error;
+  return checkExistingTrackSchema.parse(track?.id || '');
 };
 
 const getOembedTrackInfo = async (oembedUrl: string) => {
@@ -51,28 +87,6 @@ const getOembedTrackInfo = async (oembedUrl: string) => {
       };
     })
     .catch(() => trackParsingError.parse(''));
-};
-
-const createOembedTrack = async (
-  url: string,
-  urlId: string,
-  userId: string,
-) => {
-  return await getOembedTrackInfo(url).then(
-    // @ts-expect-error: "Must be object, but ts thinks that this is could be also string"
-    async ({ title, imgUrl, author, source }) =>
-      await prisma.track.create({
-        data: {
-          title,
-          url,
-          urlId,
-          imgUrl,
-          author,
-          userId,
-          source,
-        },
-      }),
-  );
 };
 
 const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
@@ -97,36 +111,10 @@ const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
     .catch(() => trackParsingError.parse(''));
 };
 
-const createSpotifyTrack = async (
-  url: string,
-  accessToken: string,
-  userId: string,
-) => {
-  return await getSpotifyTrackInfo(url, accessToken).then(
-    // @ts-expect-error: "Must be object, but ts thinks that this is could be also string"
-    async ({ title, url, urlId, imgUrl, author }) => {
-      return await prisma.track.create({
-        data: {
-          title,
-          url,
-          urlId,
-          imgUrl,
-          author,
-          userId,
-          source: 'Spotify',
-        },
-      });
-    },
-  );
-};
-
 export const trackService = {
-  getYoutubeId,
+  createTrack,
   checkExistingTrack,
   getOembedTrackInfo,
-  createOembedTrack,
-  getSoundCloudTrackId,
-  getSpotifyTrackId,
   getSpotifyTrackInfo,
-  createSpotifyTrack,
+  getTrackId,
 };

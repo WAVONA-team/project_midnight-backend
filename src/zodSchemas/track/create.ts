@@ -1,6 +1,33 @@
 import { z } from 'zod';
 
 export const createTrackSchema = z.object({
+  userId: z.string().trim().min(1, {
+    message: 'Введите id пользователя',
+  }),
+  title: z.string().trim().min(1, {
+    message: 'Введите название трека',
+  }),
+  url: z.string().trim().min(1, {
+    message: 'Введите ссылку на трек',
+  }),
+  urlId: z.string().trim().min(1, {
+    message: 'Введите id ссылки',
+  }),
+  imgUrl: z.string().trim().min(1, {
+    message: 'Введите ссылку на изображение трека',
+  }),
+  author: z.string().trim().min(1, {
+    message: 'Введите автора трека',
+  }),
+  source: z.string().trim().min(1, {
+    message: 'Введите источник трека',
+  }),
+  duration: z.string().trim().min(1, {
+    message: 'Введите продолжительность трека',
+  }),
+});
+
+export const getTrackInfoSchema = z.object({
   url: z.string().trim().min(1, {
     message: 'Введите ссылку на трек',
   }),
