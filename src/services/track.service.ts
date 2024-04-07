@@ -31,11 +31,6 @@ const createTrack = async ({
 }: TrackToCreate) => {
   await checkExistingTrack(urlId, userId);
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { searchHistory: true },
-  });
-
   const newTrack = await prisma.track.create({
     data: {
       userIdTracks: userId,
@@ -47,23 +42,6 @@ const createTrack = async ({
       author,
       source,
       duration,
-    },
-  });
-
-  if ((user?.searchHistory.length as number) < 5) {
-    user?.searchHistory.unshift(newTrack);
-  } else {
-    user?.searchHistory.slice(0, 4).unshift(newTrack);
-  }
-
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      searchHistory: {
-        set: user?.searchHistory,
-      },
     },
   });
 
@@ -105,11 +83,47 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
   return checkExistingTrackSchema.parse(track?.id || '');
 };
 
-const getOembedTrackInfo = async (oembedUrl: string) => {
+const getOembedTrackInfo = async (
+  oembedUrl: string,
+  url: string,
+  userId: string,
+) => {
   return await axios
     .get<OembedTrack>(oembedUrl)
-    .then((res) => {
+    .then(async (res) => {
       const { title, author_name, thumbnail_url, provider_name } = res.data;
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { searchHistory: true },
+      });
+
+      const newTrack = await prisma.track.create({
+        data: {
+          userIdTracks: userId,
+          userIdSearchHistory: userId,
+          title,
+          url: oembedUrl.split('&')[0].split('url=')[1],
+          urlId: getTrackId(url) as string,
+          imgUrl: thumbnail_url,
+          author: author_name,
+          source: provider_name,
+          duration: '',
+        },
+      });
+
+      user?.searchHistory.unshift(newTrack);
+
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          searchHistory: {
+            set: user?.searchHistory,
+          },
+        },
+      });
 
       return {
         title,
@@ -122,7 +136,11 @@ const getOembedTrackInfo = async (oembedUrl: string) => {
     .catch(() => trackParsingError.parse(''));
 };
 
-const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
+const getSpotifyTrackInfo = async (
+  url: string,
+  accessToken: string,
+  userId: string,
+) => {
   return await axios
     .get<SpotifyTrack>(url, {
       headers: {
@@ -131,6 +149,38 @@ const getSpotifyTrackInfo = async (url: string, accessToken: string) => {
     })
     .then(async (res) => {
       const { name, artists, album, external_urls, id } = res.data;
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { searchHistory: true },
+      });
+
+      const newTrack = await prisma.track.create({
+        data: {
+          userIdTracks: userId,
+          userIdSearchHistory: userId,
+          title: name,
+          url: external_urls.spotify,
+          urlId: id,
+          imgUrl: album.images[0].url,
+          author: artists[0].name,
+          source: 'Spotify',
+          duration: '',
+        },
+      });
+
+      user?.searchHistory.unshift(newTrack);
+
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          searchHistory: {
+            set: user?.searchHistory,
+          },
+        },
+      });
 
       return {
         title: name,

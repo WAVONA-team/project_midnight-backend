@@ -40,7 +40,7 @@ const getSearchHistory = async (req: Request, res: Response) => {
     checkExistingUser.parse('');
   }
 
-  res.send(user?.searchHistory);
+  res.send(user?.searchHistory.slice(0, 5).reverse());
 };
 
 export const userController = {
