@@ -31,6 +31,9 @@ export const getTrackInfoSchema = z.object({
   url: z.string().trim().min(1, {
     message: 'Введите ссылку на трек',
   }),
+  duration: z.string().trim().min(1, {
+    message: 'Введите продолжительность трека',
+  }),
   userId: z.string().trim().min(1, {
     message: 'Пользователь не авторизован',
   }),

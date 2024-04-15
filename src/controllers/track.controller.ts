@@ -19,15 +19,15 @@ const create = async (req: Request, res: Response) => {
 const getInfo = async (req: Request, res: Response) => {
   getTrackInfoSchema.parse(req.body);
 
-  const { url, userId } = req.body;
+  const { url, userId, duration } = req.body;
 
   switch (true) {
     case url.includes('youtube') || url.includes('youtu.be'): {
       return res.send(
         await trackService.getOembedTrackInfo(
           `https://www.youtube.com/oembed?url=${url}&format=json`,
-          url,
           userId,
+          duration,
         ),
       );
     }
@@ -36,8 +36,8 @@ const getInfo = async (req: Request, res: Response) => {
       return res.send(
         await trackService.getOembedTrackInfo(
           `https://soundcloud.com/oembed?url=${url}&format=json`,
-          url,
           userId,
+          duration,
         ),
       );
     }
@@ -56,6 +56,7 @@ const getInfo = async (req: Request, res: Response) => {
           `https://api.spotify.com/v1/tracks/${urlId}`,
           user?.spotifyOAUTH as string,
           user?.id as string,
+          duration,
         ),
       );
     }
