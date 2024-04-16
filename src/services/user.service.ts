@@ -66,9 +66,19 @@ const removeSpotify = async (userId: string) => {
   });
 };
 
+const getTracks = async (userId: string) => {
+  return await prisma.track.findMany({
+    where: { userIdTracks: userId },
+    orderBy: {
+      updatedAt: 'asc',
+    },
+  });
+};
+
 export const userService = {
   normalize,
   findByEmail,
   getById,
   removeSpotify,
+  getTracks,
 };

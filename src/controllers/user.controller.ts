@@ -7,6 +7,8 @@ import {
   incorrectAppSchema,
   getSearchHistorySchema,
   checkExistingUser,
+  getTrackSchemaQuery,
+  getTrackSchemaParams,
 } from '../zodSchemas/user/index.js';
 
 const removeApp = async (req: Request, res: Response) => {
@@ -43,7 +45,25 @@ const getSearchHistory = async (req: Request, res: Response) => {
   res.send(user?.searchHistory.reverse().slice(0, 5));
 };
 
+const getTracks = async (req: Request, res: Response) => {
+  getTrackSchemaQuery.parse(req.query);
+  getTrackSchemaParams.parse(req.params);
+
+  const { page } = req.query;
+  const { userId } = req.params;
+
+  const tracks = await userService.getTracks(userId);
+
+  const normalizedPage =
+    +(page as unknown as number) < 0 ? 0 : +(page as unknown as number);
+
+  res
+    .setHeader('x-total-count', tracks.length)
+    .send(tracks.slice((normalizedPage - 1) * 10, normalizedPage * 10));
+};
+
 export const userController = {
   removeApp,
   getSearchHistory,
+  getTracks,
 };

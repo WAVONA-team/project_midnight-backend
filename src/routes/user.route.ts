@@ -5,4 +5,9 @@ import { authMiddleware } from '../middlewares/index.js';
 export const userRouter = express.Router();
 
 userRouter.patch('/remove-app', authMiddleware, userController.removeApp);
-userRouter.get('/search-history/:userId', authMiddleware, userController.getSearchHistory);
+userRouter.get(
+  '/search-history/:userId',
+  authMiddleware,
+  userController.getSearchHistory,
+);
+userRouter.get('/tracks/:userId', authMiddleware, userController.getTracks);
