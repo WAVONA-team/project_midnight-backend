@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Token {
-  refreshToken String @unique
+  refreshToken String @unique @db.Text
   userId       String @unique
 
   user User @relation(fields: [userId], references: [id])
@@ -39,8 +39,8 @@ model User {
 
 model Track {
   id                  String @id @default(uuid())
-  userIdTracks        String
-  userIdSearchHistory String
+  userIdTracks        String?
+  userIdSearchHistory String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

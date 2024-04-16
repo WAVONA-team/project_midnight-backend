@@ -3,7 +3,7 @@ export type SpotifyTrack = {
   artists: SpotifyArtists[];
   album: ThumbnailUrl;
   id: string;
-  external_urls: Record<'spotify', string>;
+  uri: string;
 };
 
 type SpotifyArtists = {

@@ -1,6 +1,5 @@
 /* eslint-disable indent */
 import axios from 'axios';
-import { Track } from 'project_midnight';
 import prisma from '../client.js';
 import {
   checkExistingTrackSchema,
@@ -20,6 +19,15 @@ type TrackToCreate = {
   duration: string;
 };
 
+type ParsedTrack = {
+  title: string;
+  author_name: string;
+  imgUrl: string;
+  source: string;
+  url: string;
+  duration: string;
+};
+
 const createTrack = async ({
   userId,
   title,
@@ -32,10 +40,10 @@ const createTrack = async ({
 }: TrackToCreate) => {
   await checkExistingTrack(urlId, userId);
 
-  const newTrack = await prisma.track.create({
+  return await prisma.track.create({
     data: {
       userIdTracks: userId,
-      userIdSearchHistory: userId,
+      userIdSearchHistory: null,
       title,
       url,
       urlId,
@@ -45,8 +53,6 @@ const createTrack = async ({
       duration,
     },
   });
-
-  return newTrack;
 };
 
 const getTrackId = (url: string) => {
@@ -84,59 +90,58 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
   return checkExistingTrackSchema.parse(track?.id || '');
 };
 
-const createSearchHistory = async (userId: string, newTrack: Track) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { searchHistory: true },
+const createSearchHistory = async (
+  userId: string,
+  parsedTrack: ParsedTrack,
+) => {
+  const { title, url, imgUrl, author_name, source, duration } = parsedTrack;
+
+  const track = await prisma.track.findUnique({
+    where: { userIdSearchHistory: userId, urlId: getTrackId(url) as string },
   });
 
-  user?.searchHistory.unshift(newTrack);
+  if (track) {
+    await prisma.track.update({
+      where: { id: track.id },
+      data: { updatedAt: new Date() },
+    });
 
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
+    return track;
+  }
+
+  return await prisma.track.create({
     data: {
-      searchHistory: {
-        set: user?.searchHistory,
-      },
+      userIdTracks: null,
+      userIdSearchHistory: userId,
+      title,
+      url,
+      urlId: getTrackId(url) as string,
+      imgUrl,
+      author: author_name,
+      source,
+      duration,
     },
   });
 };
 
 const getOembedTrackInfo = async (
   oembedUrl: string,
-  url: string,
   userId: string,
+  duration: string,
 ) => {
   return await axios
     .get<OembedTrack>(oembedUrl)
     .then(async (res) => {
       const { title, author_name, thumbnail_url, provider_name } = res.data;
 
-      const newTrack = await prisma.track.create({
-        data: {
-          userIdTracks: userId,
-          userIdSearchHistory: userId,
-          title,
-          url: oembedUrl.split('&')[0].split('url=')[1],
-          urlId: getTrackId(url) as string,
-          imgUrl: thumbnail_url,
-          author: author_name,
-          source: provider_name,
-          duration: '',
-        },
-      });
-
-      await createSearchHistory(userId, newTrack);
-
-      return {
+      return await createSearchHistory(userId, {
         title,
-        author: author_name,
+        author_name,
         imgUrl: thumbnail_url,
         source: provider_name,
         url: oembedUrl.split('&')[0].split('url=')[1],
-      };
+        duration,
+      }).then((res) => res);
     })
     .catch(() => trackParsingError.parse(''));
 };
@@ -145,6 +150,7 @@ const getSpotifyTrackInfo = async (
   url: string,
   accessToken: string,
   userId: string,
+  duration: string,
 ) => {
   return await axios
     .get<SpotifyTrack>(url, {
@@ -153,31 +159,25 @@ const getSpotifyTrackInfo = async (
       },
     })
     .then(async (res) => {
-      const { name, artists, album, external_urls, id } = res.data;
+      const { name, artists, album, uri, id } = res.data;
 
-      const newTrack = await prisma.track.create({
-        data: {
-          userIdTracks: userId,
-          userIdSearchHistory: userId,
-          title: name,
-          url: external_urls.spotify,
-          urlId: id,
-          imgUrl: album.images[0].url,
-          author: artists[0].name,
-          source: 'Spotify',
-          duration: '',
-        },
+      await createSearchHistory(userId, {
+        title: name,
+        author_name: artists[0].name,
+        imgUrl: album.images[0].url,
+        source: 'Spotify',
+        url: uri,
+        duration,
       });
-
-      await createSearchHistory(userId, newTrack);
 
       return {
         title: name,
         author: artists[0].name,
         imgUrl: album.images[0].url,
         source: 'Spotify',
-        url: external_urls.spotify,
+        url: uri,
         urlId: id,
+        duration,
       };
     })
     .catch(() => trackParsingError.parse(''));
