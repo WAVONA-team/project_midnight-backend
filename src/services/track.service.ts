@@ -90,33 +90,38 @@ const checkExistingTrack = async (urlId: string, userId: string) => {
   return checkExistingTrackSchema.parse(track?.id || '');
 };
 
-const createSearchHistory = async (userId: string, track: ParsedTrack) => {
-  const { title, url, imgUrl, author_name, source, duration } = track;
+const createSearchHistory = async (
+  userId: string,
+  parsedTrack: ParsedTrack,
+) => {
+  const { title, url, imgUrl, author_name, source, duration } = parsedTrack;
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { searchHistory: true },
+  const track = await prisma.track.findUnique({
+    where: { userIdSearchHistory: userId, urlId: getTrackId(url) as string },
   });
 
-  if (user?.searchHistory.some((track) => track.url === url)) {
+  if (track) {
+    await prisma.track.update({
+      where: { id: track.id },
+      data: { updatedAt: new Date() },
+    });
+
     return track;
   }
 
-  return await prisma.track
-    .create({
-      data: {
-        userIdTracks: null,
-        userIdSearchHistory: userId,
-        title,
-        url,
-        urlId: getTrackId(url) as string,
-        imgUrl,
-        author: author_name,
-        source,
-        duration,
-      },
-    })
-    .catch((e) => console.log(e));
+  return await prisma.track.create({
+    data: {
+      userIdTracks: null,
+      userIdSearchHistory: userId,
+      title,
+      url,
+      urlId: getTrackId(url) as string,
+      imgUrl,
+      author: author_name,
+      source,
+      duration,
+    },
+  });
 };
 
 const getOembedTrackInfo = async (
