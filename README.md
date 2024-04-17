@@ -10,6 +10,7 @@
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
   | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` type from `project_midnight` (lib) | Remove connected app |
   | `search-history` | `GET` | - `{ userId: string }` - Request params | `Track`[] type from `project_midnight` (lib) | Get user search history |
+  | `tracks` | `GET` | - `{ userId: string }` - Request params, `{ page: string }` - Request query | `Track`[] type from `project_midnight` (lib) | Get user saved tracks |
 - `track`
   <br>
   | Name | Method | Request | Response | Description |
