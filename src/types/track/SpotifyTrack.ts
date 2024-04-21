@@ -4,6 +4,7 @@ export type SpotifyTrack = {
   album: ThumbnailUrl;
   id: string;
   uri: string;
+  duration_ms: number;
 };
 
 type SpotifyArtists = {

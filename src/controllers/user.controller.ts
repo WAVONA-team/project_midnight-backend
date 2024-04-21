@@ -59,7 +59,7 @@ const getTracks = async (req: Request, res: Response) => {
   const tracks = await userService.getTracks(userId);
 
   const normalizedPage =
-    +(page as unknown as number) < 0 ? 0 : +(page as unknown as number);
+    +(page as unknown as number) <= 0 ? 1 : +(page as unknown as number);
 
   res
     .setHeader('x-total-count', tracks.length)

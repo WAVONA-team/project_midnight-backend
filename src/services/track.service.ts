@@ -124,6 +124,26 @@ const createSearchHistory = async (
   });
 };
 
+const formatSpotifyTime = (milliseconds: number) => {
+  const totalSeconds = milliseconds / 1000;
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  let formattedTime = '';
+
+  if (hours > 0) {
+    formattedTime += hours.toString().padStart(2, '0') + ':';
+  }
+
+  formattedTime +=
+    minutes.toString().padStart(2, '0') +
+    ':' +
+    seconds.toString().padStart(2, '0');
+
+  return formattedTime;
+};
+
 const getOembedTrackInfo = async (
   oembedUrl: string,
   userId: string,
@@ -150,7 +170,7 @@ const getSpotifyTrackInfo = async (
   url: string,
   accessToken: string,
   userId: string,
-  duration: string,
+  originalUrl: string,
 ) => {
   return await axios
     .get<SpotifyTrack>(url, {
@@ -159,14 +179,16 @@ const getSpotifyTrackInfo = async (
       },
     })
     .then(async (res) => {
-      const { name, artists, album, uri, id } = res.data;
+      const { name, artists, album, uri, id, duration_ms } = res.data;
+
+      const duration = formatSpotifyTime(duration_ms);
 
       await createSearchHistory(userId, {
         title: name,
         author_name: artists[0].name,
         imgUrl: album.images[0].url,
         source: 'Spotify',
-        url: uri,
+        url: originalUrl,
         duration,
       });
 
@@ -183,10 +205,18 @@ const getSpotifyTrackInfo = async (
     .catch(() => trackParsingError.parse(''));
 };
 
+const updateOrder = async (trackId: string) => {
+  return await prisma.track.update({
+    where: { id: trackId },
+    data: { updatedAt: new Date() },
+  });
+};
+
 export const trackService = {
   createTrack,
   checkExistingTrack,
   getOembedTrackInfo,
   getSpotifyTrackInfo,
   getTrackId,
+  updateOrder,
 };
