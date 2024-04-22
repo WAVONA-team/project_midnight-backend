@@ -6,6 +6,7 @@ import {
   getTrackInfoSchema,
   unsupportedTrackSchema,
   unauthorizedSpotifySchema,
+  updateTrackOrderSchema,
 } from '../zodSchemas/track/index.js';
 import { userService } from '../services/user.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
@@ -56,7 +57,7 @@ const getInfo = async (req: Request, res: Response) => {
           `https://api.spotify.com/v1/tracks/${urlId}`,
           user?.spotifyOAUTH as string,
           user?.id as string,
-          duration,
+          url,
         ),
       );
     }
@@ -67,7 +68,16 @@ const getInfo = async (req: Request, res: Response) => {
   }
 };
 
+const updateOrder = async (req: Request, res: Response) => {
+  updateTrackOrderSchema.parse(req.params);
+
+  const { trackId } = req.params;
+
+  res.send(await trackService.updateOrder(trackId));
+};
+
 export const trackController = {
   create,
   getInfo,
+  updateOrder,
 };
