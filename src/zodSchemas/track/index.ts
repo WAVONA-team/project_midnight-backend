@@ -8,3 +8,4 @@ export {
 } from './create.js';
 
 export { updateTrackOrderSchema } from './updateOrder.js';
+export { deleteFromSavedTrackSchema } from './deleteFromSaved.js';

@@ -7,6 +7,7 @@ import {
   unsupportedTrackSchema,
   unauthorizedSpotifySchema,
   updateTrackOrderSchema,
+  deleteFromSavedTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { userService } from '../services/user.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
@@ -76,8 +77,17 @@ const updateOrder = async (req: Request, res: Response) => {
   res.send(await trackService.updateOrder(trackId));
 };
 
+const deleteFromSaved = async (req: Request, res: Response) => {
+  deleteFromSavedTrackSchema.parse(req.params);
+
+  const { trackId } = req.params;
+
+  res.send(await trackService.deleteFromSaved(trackId));
+};
+
 export const trackController = {
   create,
   getInfo,
   updateOrder,
+  deleteFromSaved,
 };

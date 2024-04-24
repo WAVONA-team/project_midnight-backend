@@ -17,6 +17,7 @@
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
   | `new` | `POST` | - `{ userId: string, title: string, url: string, urlId: string, imgUrl: string, author: string, source: string, duration: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
   | `get-info` | `POST` | - `{ url: string, userId: string, duration: string }` - Request body | `{ id: string, userIdSearchHistory: string, createdAt: Date, updatedAt: Date, title: string, author: string, imgUrl: string, source: string, url: string, urlId: string, duration: string }` | Get track info |
+  | `delete-from-saved` | `DELETE` | - `{ trackId: string }` - Request params | `Track` type from `project_midnight` (lib) | Remove track from saved |
 
 ## How to run localy
 

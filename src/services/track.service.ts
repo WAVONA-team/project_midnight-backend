@@ -212,6 +212,13 @@ const updateOrder = async (trackId: string) => {
   });
 };
 
+const deleteFromSaved = async (trackId: string) => {
+  return await prisma.track.update({
+    where: { id: trackId },
+    data: { userIdTracks: null },
+  });
+};
+
 export const trackService = {
   createTrack,
   checkExistingTrack,
@@ -219,4 +226,5 @@ export const trackService = {
   getSpotifyTrackInfo,
   getTrackId,
   updateOrder,
+  deleteFromSaved,
 };
