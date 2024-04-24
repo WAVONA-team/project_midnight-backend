@@ -219,6 +219,12 @@ const deleteFromSaved = async (trackId: string) => {
   });
 };
 
+const checkTrack = async (trackId: string, userId: string) => {
+  return await prisma.track.findUnique({
+    where: { id: trackId, userIdTracks: userId },
+  });
+};
+
 export const trackService = {
   createTrack,
   checkExistingTrack,
@@ -227,4 +233,5 @@ export const trackService = {
   getTrackId,
   updateOrder,
   deleteFromSaved,
+  checkTrack,
 };
