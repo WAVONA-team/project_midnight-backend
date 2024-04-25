@@ -10,12 +10,14 @@ import { jwtService } from '../services/jwt.service.js';
 
 export const musicServicesRouter = express.Router();
 
+console.log('1', process.env.SERVER_HOST);
+
 passport.use(
   new Strategy(
     {
       clientID: process.env.SPOTIFY_CLIENT_ID as string,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET as string,
-      callbackURL: process.env.SERVER_HOST as string,
+      callbackURL: `${process.env.SERVER_HOST as string}/auth1/spotify1/callback1`,
       passReqToCallback: true,
     },
     async (
