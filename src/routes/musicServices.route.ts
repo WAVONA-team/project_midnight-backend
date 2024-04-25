@@ -15,7 +15,7 @@ passport.use(
     {
       clientID: process.env.SPOTIFY_CLIENT_ID as string,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET as string,
-      callbackURL: 'http://localhost:8080/auth/spotify/callback',
+      callbackURL: `${process.env.SERVER_HOST}/auth/spotify/callback`,
       passReqToCallback: true,
     },
     async (
