@@ -49,7 +49,9 @@ musicServicesRouter.get('/auth/spotify', passport.authenticate('spotify'));
 musicServicesRouter.get(
   '/auth/spotify/callback',
   passport.authenticate('spotify'),
-  async (_req: Request, res: Response) => {
+  (_req: Request, res: Response) => {
+    console.log('redirect');
+
     res.redirect(`${process.env.CLIENT_HOST as string}/tracks`);
   },
 );
