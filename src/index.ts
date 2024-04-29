@@ -19,6 +19,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_HOST,
     credentials: true,
+    exposedHeaders: 'x-total-count',
   }),
 );
 
