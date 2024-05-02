@@ -17,7 +17,9 @@ const save = async (userId: string, newToken: string) => {
       userId,
     },
     data: {
-      refreshToken: newToken,
+      refreshToken: {
+        set: newToken,
+      },
     },
   });
 };
