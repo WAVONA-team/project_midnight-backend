@@ -29,7 +29,7 @@ passport.use(
       const { refreshToken: jwtRefreshToken } = req.cookies;
       const jwtUser = jwtService.verifyRefresh(jwtRefreshToken) as JwtPayload;
 
-      console.log(req.cookies);
+      console.log(req);
 
       await prisma.user.update({
         where: {
