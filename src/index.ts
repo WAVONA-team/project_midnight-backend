@@ -35,7 +35,7 @@ app.use(
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       // path: '/; samesite=None; Partitioned',
-      domain: 'project-midnight-frontend.onrender.com',
+      domain: 'project-midnight.com',
     },
   }),
 );

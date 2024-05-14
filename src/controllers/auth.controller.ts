@@ -97,7 +97,7 @@ const generateTokens = async (res: Response, user: User) => {
     sameSite: 'none',
     secure: true,
     path: '/; samesite=None; Partitioned',
-    domain: 'project-midnight-frontend.onrender.com',
+    domain: 'project-midnight.com',
   });
 
   res.send({
