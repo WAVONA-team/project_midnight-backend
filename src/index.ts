@@ -31,7 +31,7 @@ app.use(
     cookie: {
       sameSite: false,
       secure: true,
-      domain: process.env.SERVER_HOST,
+      domain: process.env.CLIENT_HOST,
       httpOnly: true,
     },
   }),
