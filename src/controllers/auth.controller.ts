@@ -94,6 +94,7 @@ const generateTokens = async (res: Response, user: User) => {
     sameSite: 'none',
     secure: true,
     path: '/; samesite=None; Partitioned',
+    domain: process.env.CLIENT_HOST,
   });
 
   res.send({
