@@ -97,7 +97,7 @@ const generateTokens = async (res: Response, user: User) => {
     sameSite: 'none',
     secure: true,
     path: '/; samesite=None; Partitioned',
-    domain: '.onrender.com',
+    domain: '.render.com',
   });
 
   res.send({
