@@ -35,7 +35,7 @@ app.use(
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       // path: '/; samesite=None; Partitioned',
-      domain: process.env.CLIENT_HOST,
+      domain: process.env.SERVER_HOST,
     },
   }),
 );
@@ -59,7 +59,7 @@ app.use('/users', userRouter);
 app.use(musicServicesRouter);
 app.use('/track', trackRouter);
 
-app.get('/test', (_req, res) => res.send(200));
+app.get('/test', (_req, res) => res.sendStatus(200));
 
 app.use(zodMiddleware);
 
