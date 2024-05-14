@@ -26,6 +26,13 @@ passport.use(
       profile: Profile,
       done: VerifyCallback,
     ) => {
+      console.log(process.env.SPOTIFY_CLIENT_ID, 'clientID');
+      console.log(process.env.SPOTIFY_CLIENT_SECRET, 'clientSecret');
+      console.log(
+        `${process.env.SERVER_HOST as string}/auth/spotify/callback`,
+        'callbackurl',
+      );
+      console.log(req.cookies, 'cookies');
       const { refreshToken: jwtToken } = req.cookies;
       const user = jwtService.verifyRefresh(jwtToken) as JwtPayload;
 
@@ -48,18 +55,11 @@ passport.use(
   ),
 );
 
-musicServicesRouter.get(
-  '/auth/spotify',
-  passport.authenticate('spotify', {
-    passReqToCallback: true,
-  }),
-);
+musicServicesRouter.get('/auth/spotify', passport.authenticate('spotify'));
 
 musicServicesRouter.get(
   '/auth/spotify/callback',
-  passport.authenticate('spotify', {
-    passReqToCallback: true,
-  }),
+  passport.authenticate('spotify'),
   async (_req: Request, res: Response) => {
     res.redirect(`${process.env.CLIENT_HOST as string}/tracks`);
   },
