@@ -92,12 +92,12 @@ const generateTokens = async (res: Response, user: User) => {
   await tokenService.save(normalizedUser.id, refreshAccessToken);
 
   res.cookie('refreshToken', refreshAccessToken, {
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    sameSite: 'none',
-    secure: true,
-    httpOnly: true,
-    path: '/; samesite=None; Partitioned',
-    domain: 'project-midnight.com',
+    // maxAge: 30 * 24 * 60 * 60 * 1000,
+    // sameSite: 'none',
+    // secure: true,
+    // httpOnly: true,
+    // path: '/; samesite=None; Partitioned',
+    // domain: 'project-midnight.com',
   });
 
   res.send({
