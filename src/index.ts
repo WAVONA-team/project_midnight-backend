@@ -28,15 +28,19 @@ app.use(
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      sameSite: 'none',
+      secure: true,
+    },
   }),
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  return done(null, user);
 });
 
 passport.deserializeUser((obj: Express.User, done) => {
-  done(null, obj);
+  return done(null, obj);
 });
 
 app.use(express.json());
