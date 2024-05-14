@@ -28,11 +28,11 @@ app.use(
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
-      sameSite: false,
-      secure: true,
-      domain: process.env.CLIENT_HOST,
-      httpOnly: true,
+      sameSite: 'none',
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   }),
 );
