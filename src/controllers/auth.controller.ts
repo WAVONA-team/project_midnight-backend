@@ -95,9 +95,9 @@ const generateTokens = async (res: Response, user: User) => {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     sameSite: 'none',
     secure: true,
-    // httpOnly: true,
-    // path: '/; samesite=None; Partitioned',
-    // domain: 'project-midnight.com',
+    httpOnly: true,
+    path: '/; samesite=None; Partitioned',
+    domain: 'project-midnight.com',
   });
 
   res.send({

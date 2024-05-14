@@ -30,12 +30,12 @@ app.use(
     saveUninitialized: false,
     proxy: true,
     cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
       sameSite: 'none',
       secure: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      // httpOnly: true,
+      httpOnly: true,
       // path: '/; samesite=None; Partitioned',
-      // domain: 'project-midnight.com',
+      domain: 'project-midnight.com',
     },
   }),
 );
