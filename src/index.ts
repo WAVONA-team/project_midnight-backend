@@ -59,7 +59,7 @@ app.use('/users', userRouter);
 app.use(musicServicesRouter);
 app.use('/track', trackRouter);
 
-app.get('/test', (_req, res) => res.sendStatus(200));
+app.get('/test', (_req, res) => res.send(200));
 
 app.use(zodMiddleware);
 
