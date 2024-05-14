@@ -31,8 +31,10 @@ app.use(
     proxy: true,
     cookie: {
       sameSite: 'none',
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      path: '/; samesite=None; Partitioned',
     },
   }),
 );
