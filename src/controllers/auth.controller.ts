@@ -90,11 +90,11 @@ const generateTokens = async (res: Response, user: User) => {
 
   res.cookie('refreshToken', refreshAccessToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
     sameSite: 'none',
     secure: true,
+    // httpOnly: true,
     // path: '/; samesite=None; Partitioned',
-    domain: 'project-midnight.com',
+    // domain: 'project-midnight.com',
   });
 
   res.send({
