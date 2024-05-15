@@ -49,7 +49,10 @@ passport.use(
   ),
 );
 
-musicServicesRouter.get('/auth/spotify', passport.authenticate('spotify'));
+musicServicesRouter.get(
+  '/auth/spotify',
+  passport.authenticate('spotify', { successRedirect: 'https://google.com' }),
+);
 
 musicServicesRouter.get(
   '/auth/spotify/callback',
