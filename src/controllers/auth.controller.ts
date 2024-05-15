@@ -80,6 +80,12 @@ const refresh = async (req: Request, res: Response) => {
   await generateTokens(res, user as User);
 };
 
+declare module 'express-serve-static-core' {
+  export interface CookieOptions {
+    partitioned?: boolean;
+  }
+}
+
 const generateTokens = async (res: Response, user: User) => {
   const normalizedUser = userService.normalize(user);
 
@@ -93,6 +99,7 @@ const generateTokens = async (res: Response, user: User) => {
     sameSite: 'none',
     secure: true,
     httpOnly: true,
+    partitioned: true,
     // path: '/; samesite=None; Partitioned',
     // domain: '.project-midnight.com',
   });
