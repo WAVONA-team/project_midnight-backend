@@ -23,21 +23,21 @@ app.use(
   }),
 );
 
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
-    proxy: true,
+    // proxy: true,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: 'none',
-      secure: true,
+      // sameSite: 'none',
+      // secure: true,
       httpOnly: true,
       // path: '/; samesite=None; Partitioned',
-      domain: '.project-midnight.com',
+      // domain: '.project-midnight.com',
     },
   }),
 );
