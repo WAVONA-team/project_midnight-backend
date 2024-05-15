@@ -51,12 +51,12 @@ passport.use(
 
 musicServicesRouter.get(
   '/auth/spotify',
-  passport.authenticate('spotify', { successRedirect: 'https://google.com' }),
+  passport.authenticate('spotify', { session: false }),
 );
 
 musicServicesRouter.get(
   '/auth/spotify/callback',
-  passport.authenticate('spotify'),
+  passport.authenticate('spotify', { session: false }),
   async (_req: Request, res: Response) => {
     res.redirect(`${process.env.CLIENT_HOST as string}/tracks`);
   },
