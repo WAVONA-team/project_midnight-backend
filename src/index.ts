@@ -37,7 +37,7 @@ app.use(
       secure: true,
       httpOnly: true,
       // path: '/; samesite=None; Partitioned',
-      domain: 'project-midnight.com',
+      domain: '.project-midnight.com',
     },
   }),
 );
