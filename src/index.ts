@@ -15,6 +15,8 @@ import { trackRouter } from './routes/track.route.js';
 const PORT = process.env.PORT || 8080;
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(
   cors({
     origin: process.env.CLIENT_HOST,
@@ -22,8 +24,6 @@ app.use(
     exposedHeaders: 'x-total-count',
   }),
 );
-
-app.set('trust proxy', true);
 
 app.use(
   session({
@@ -33,8 +33,8 @@ app.use(
     // proxy: true,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000,
-      // sameSite: 'none',
-      // secure: true,
+      sameSite: 'none',
+      secure: true,
       httpOnly: true,
       // path: '/; samesite=None; Partitioned',
       // domain: '.project-midnight.com',
