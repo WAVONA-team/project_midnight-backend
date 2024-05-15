@@ -21,6 +21,9 @@
     "url": "https://github.com/WAVONA-team/project_midnight-backend/issues"
   },
   "homepage": "https://github.com/WAVONA-team/project_midnight-backend#readme",
+  "overrides": {
+    "cookie": "0.6.0"
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^5.9.0",
     "@prisma/client": "^5.9.1",
