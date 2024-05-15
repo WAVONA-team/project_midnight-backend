@@ -94,7 +94,7 @@ const generateTokens = async (res: Response, user: User) => {
   res.cookie('refreshToken', refreshAccessToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     // sameSite: 'none',
-    secure: true,
+    secure: false,
     httpOnly: true,
     // priority: 'high',
     path: '/; samesite=None; Partitioned',
