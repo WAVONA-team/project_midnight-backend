@@ -94,7 +94,7 @@ const generateTokens = async (res: Response, user: User) => {
     secure: true,
     httpOnly: true,
     path: '/; samesite=None; Partitioned',
-    domain: 'project-midnight.com',
+    // domain: 'project-midnight.com',
   });
 
   res.send({
