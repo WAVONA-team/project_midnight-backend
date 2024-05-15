@@ -15,6 +15,8 @@ import { trackRouter } from './routes/track.route.js';
 const PORT = process.env.PORT || 8080;
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(
   cors({
     origin: process.env.CLIENT_HOST,
