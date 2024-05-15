@@ -23,6 +23,12 @@ import { authService } from '../services/auth.service.js';
 import { tokenService } from '../services/token.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
 
+declare module 'express-serve-static-core' {
+  export interface CookieOptions {
+    partitioned?: boolean;
+  }
+}
+
 const register = async (req: Request, res: Response) => {
   authSchema.parse(req.body);
 
@@ -83,12 +89,6 @@ const refresh = async (req: Request, res: Response) => {
   await generateTokens(res, user as User);
 };
 
-declare module 'express-serve-static-core' {
-  export interface CookieOptions {
-    partitioned?: boolean;
-  }
-}
-
 const generateTokens = async (res: Response, user: User) => {
   const normalizedUser = userService.normalize(user);
 
@@ -104,7 +104,7 @@ const generateTokens = async (res: Response, user: User) => {
     httpOnly: true,
     partitioned: true,
     // path: '/; samesite=None; Partitioned',
-    // domain: '.project-midnight.com',
+    domain: '.project-midnight.com',
   });
 
   res.send({
