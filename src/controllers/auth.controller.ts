@@ -29,7 +29,10 @@ const register = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const createdUser = await authService.register(email, hashedPassword);
+  const createdUser = await authService.register(
+    email.toLowerCase(),
+    hashedPassword,
+  );
 
   res.send(createdUser);
 };
@@ -47,12 +50,12 @@ const login = async (req: Request, res: Response) => {
   authSchema.parse(req.body);
 
   const { email, password } = req.body;
-  const user = await userService.findByEmail(email);
+  const user = await userService.findByEmail(email.toLowerCase());
 
   userLoginSchema.parse(user || {});
 
   await loginSchema.parseAsync({
-    email,
+    email: email.toLowerCase(),
     confirmPassword: password,
     password: user!.password,
   });
