@@ -26,8 +26,8 @@ app.use(
 app.use(
   session({
     secret: process.env.SESSION_SECRET as string,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
   }),
 );
 
@@ -55,5 +55,5 @@ app.get('/test', (_req, res) => res.send(200));
 app.use(zodMiddleware);
 
 app.listen(PORT, () =>
-  console.log(`Server is running on https://localhost:${PORT}`),
+  console.log(`Server is running on http://localhost:${PORT}`),
 );
