@@ -1,7 +1,6 @@
 import { type Request, type Response } from 'express';
 import 'express-async-errors';
 import bcrypt from 'bcrypt';
-import { JwtPayload } from 'jsonwebtoken';
 
 import { User } from 'project_midnight';
 
@@ -72,10 +71,10 @@ const login = async (req: Request, res: Response) => {
 const refresh = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
 
-  const jwtUser = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+  const jwtUserId = jwtService.verifyRefresh(refreshToken) as string;
   const token = await tokenService.getByToken(refreshToken);
 
-  const user = await userService.getById(jwtUser.id);
+  const user = await userService.getById(jwtUserId);
 
   refreshSchema.parse({
     userId: user?.id,
@@ -113,14 +112,14 @@ const generateTokens = async (res: Response, user: User) => {
 
 const logout = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
-  const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+  const userId = jwtService.verifyRefresh(refreshToken) as string;
 
   refreshSchema.parse({
-    userId: user.id,
+    userId,
     token: refreshToken,
   });
 
-  await tokenService.remove(user.id);
+  await tokenService.remove(userId);
 
   res.sendStatus(204);
 };

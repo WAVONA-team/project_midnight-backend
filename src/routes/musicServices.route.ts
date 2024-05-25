@@ -27,11 +27,11 @@ passport.use(
       done: VerifyCallback,
     ) => {
       const { refreshToken: jwtToken } = req.cookies;
-      const user = jwtService.verifyRefresh(jwtToken) as JwtPayload;
+      const userId = jwtService.verifyRefresh(jwtToken) as string;
 
       await prisma.user.update({
         where: {
-          id: user.id,
+          id: userId,
         },
         data: {
           spotifyOAUTH: accessToken,
