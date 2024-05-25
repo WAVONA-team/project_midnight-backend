@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+// import cookieSession from 'cookie-session';
 import passport from 'passport';
 // import session from 'express-session';
 import 'dotenv/config.js';
@@ -25,23 +26,6 @@ app.use(
   }),
 );
 
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET as string,
-//     resave: false,
-//     saveUninitialized: false,
-//     // proxy: true,
-//     cookie: {
-//       maxAge: 30 * 24 * 60 * 60 * 1000,
-//       sameSite: 'none',
-//       secure: true,
-//       httpOnly: true,
-//       // path: '/; samesite=None; Partitioned',
-//       // domain: '.project-midnight.com',
-//     },
-//   }),
-// );
-
 passport.serializeUser((user, done) => {
   return done(null, user);
 });
@@ -54,7 +38,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(passport.initialize());
-// app.use(passport.session());
 
 app.use(authRouter);
 app.use('/users', userRouter);
