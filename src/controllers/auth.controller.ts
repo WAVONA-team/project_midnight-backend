@@ -98,10 +98,10 @@ const generateTokens = async (res: Response, user: User) => {
 
   res.cookie('refreshToken', refreshAccessToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    sameSite: 'none',
-    secure: true,
     httpOnly: true,
-    partitioned: true,
+    sameSite: process.env.ENV_MODE === 'PRODUCTION' ? 'none' : 'lax',
+    secure: process.env.ENV_MODE === 'PRODUCTION',
+    partitioned: process.env.ENV_MODE === 'PRODUCTION',
   });
 
   res.send({
