@@ -13,7 +13,7 @@ model Token {
 
   user User @relation(fields: [userId], references: [id])
 
-  @@index([refreshToken], type: Hash)
+  @@index([refreshToken, userId], type: Hash)
 }
 
 model User {
