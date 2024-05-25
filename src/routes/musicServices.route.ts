@@ -26,7 +26,6 @@ passport.use(
       profile: Profile,
       done: VerifyCallback,
     ) => {
-      console.log(req.cookies, 'cookies');
       const { refreshToken: jwtToken } = req.cookies;
       const user = jwtService.verifyRefresh(jwtToken) as JwtPayload;
 
@@ -58,7 +57,6 @@ musicServicesRouter.get(
   '/auth/spotify/callback',
   passport.authenticate('spotify', { session: false }),
   async (_req: Request, res: Response) => {
-    // res.send(200);
     res.redirect(`${process.env.CLIENT_HOST as string}/tracks`);
   },
 );

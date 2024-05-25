@@ -55,7 +55,7 @@ const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user = await userService.findByEmail(email);
 
-  userLoginSchema.parse(user || {});
+  userLoginSchema.parse({ id: user?.id || '' });
 
   await loginSchema.parseAsync({
     email,
@@ -100,8 +100,6 @@ const generateTokens = async (res: Response, user: User) => {
     secure: true,
     httpOnly: true,
     partitioned: true,
-    // path: '/; samesite=None; Partitioned',
-    // domain: '.project-midnight.com',
   });
 
   res.send({
