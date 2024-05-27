@@ -1,7 +1,6 @@
 import { type Request, type Response } from 'express';
 import 'express-async-errors';
 import bcrypt from 'bcrypt';
-import { JwtPayload } from 'jsonwebtoken';
 
 import { User } from 'project_midnight';
 
@@ -22,6 +21,12 @@ import { jwtService } from '../services/jwt.service.js';
 import { authService } from '../services/auth.service.js';
 import { tokenService } from '../services/token.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
+
+declare module 'express-serve-static-core' {
+  export interface CookieOptions {
+    partitioned?: boolean;
+  }
+}
 
 const register = async (req: Request, res: Response) => {
   authSchema.parse(req.body);
@@ -52,7 +57,7 @@ const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user = await userService.findByEmail(email.toLowerCase());
 
-  userLoginSchema.parse(user || {});
+  userLoginSchema.parse({ id: user?.id || '' });
 
   await loginSchema.parseAsync({
     email: email.toLowerCase(),
@@ -66,10 +71,10 @@ const login = async (req: Request, res: Response) => {
 const refresh = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
 
-  const jwtUser = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+  const jwtUserId = jwtService.verifyRefresh(refreshToken) as string;
   const token = await tokenService.getByToken(refreshToken);
 
-  const user = await userService.getById(jwtUser.id);
+  const user = await userService.getById(jwtUserId);
 
   refreshSchema.parse({
     userId: user?.id,
@@ -94,6 +99,9 @@ const generateTokens = async (res: Response, user: User) => {
   res.cookie('refreshToken', refreshAccessToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    sameSite: process.env.ENV_MODE === 'PRODUCTION' ? 'none' : 'lax',
+    secure: process.env.ENV_MODE === 'PRODUCTION',
+    partitioned: process.env.ENV_MODE === 'PRODUCTION',
   });
 
   res.send({
@@ -104,14 +112,14 @@ const generateTokens = async (res: Response, user: User) => {
 
 const logout = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
-  const user = jwtService.verifyRefresh(refreshToken) as JwtPayload;
+  const userId = jwtService.verifyRefresh(refreshToken) as string;
 
   refreshSchema.parse({
-    userId: user.id,
+    userId,
     token: refreshToken,
   });
 
-  await tokenService.remove(user.id);
+  await tokenService.remove(userId);
 
   res.sendStatus(204);
 };

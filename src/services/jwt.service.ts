@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { NormalizedUser } from 'project_midnight';
 
 const sign = (user: NormalizedUser) => {
-  const token = jwt.sign(user, process.env.JWT_KEY as string);
+  const token = jwt.sign(user.id, process.env.JWT_KEY as string);
 
   return token;
 };
@@ -16,7 +16,7 @@ const verify = (token: string) => {
 };
 
 const signRefresh = (user: NormalizedUser) => {
-  const token = jwt.sign(user, process.env.JWT_REFRESH_KEY as string);
+  const token = jwt.sign(user.id, process.env.JWT_REFRESH_KEY as string);
 
   return token;
 };

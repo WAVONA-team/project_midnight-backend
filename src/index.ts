@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+// import cookieSession from 'cookie-session';
 import passport from 'passport';
-import session from 'express-session';
+// import session from 'express-session';
 import 'dotenv/config.js';
 
 import { zodMiddleware } from './middlewares/zod.middleware.js';
@@ -15,6 +16,8 @@ import { trackRouter } from './routes/track.route.js';
 const PORT = process.env.PORT || 8080;
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(
   cors({
     origin: process.env.CLIENT_HOST,
@@ -23,27 +26,18 @@ app.use(
   }),
 );
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET as string,
-    resave: false,
-    saveUninitialized: false,
-  }),
-);
-
 passport.serializeUser((user, done) => {
-  done(null, user);
+  return done(null, user);
 });
 
 passport.deserializeUser((obj: Express.User, done) => {
-  done(null, obj);
+  return done(null, obj);
 });
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(authRouter);
 app.use('/users', userRouter);
