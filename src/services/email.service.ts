@@ -75,6 +75,7 @@ const generateHTML = (
             .content p {
               font-size: 18px;
               margin: 0 0 20px;
+              color: #777;
             }
 
             .token {
