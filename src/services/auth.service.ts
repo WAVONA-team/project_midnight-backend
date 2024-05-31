@@ -14,7 +14,9 @@ import { emailService } from './email.service.js';
 import { userService } from './user.service.js';
 
 const register = async (email: string, password: string) => {
-  const activationToken = uuidv4().slice(0, 6);
+  const activationToken = Math.floor(
+    100000 + Math.random() * 900000,
+  ).toString(); // 6 digit random number
 
   registerSchema.parse((await userService.findByEmail(email)) || {});
 

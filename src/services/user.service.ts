@@ -66,9 +66,19 @@ const removeSpotify = async (userId: string) => {
   });
 };
 
-const getTracks = async (userId: string) => {
+const getTracks = async (userId: string, query: string) => {
   return await prisma.track.findMany({
-    where: { userIdTracks: userId },
+    where: {
+      userIdTracks: userId,
+      OR: [
+        {
+          title: { contains: query, mode: 'insensitive' },
+        },
+        {
+          author: { contains: query, mode: 'insensitive' },
+        },
+      ],
+    },
     orderBy: {
       updatedAt: 'asc',
     },
