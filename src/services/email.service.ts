@@ -39,7 +39,7 @@ const generateHTML = (
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Verification Code</title>
+          <title>Верификационный код</title>
           <style>
             body {
               font-family: 'Arial', sans-serif;
@@ -149,7 +149,7 @@ const sendSuccessResetEmail = (email: string) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Password Reset Notification</title>
+      <title>Подтверждение сброса пароля</title>
       <style>
         body {
           font-family: 'Arial', sans-serif;
@@ -221,7 +221,7 @@ const sendSuccessResetEmail = (email: string) => {
     </html>
   `;
 
-  return send({ email, subject: 'Successfully reset', html });
+  return send({ email, subject: 'Успешный сброс пароля', html });
 };
 
 export const emailService = {

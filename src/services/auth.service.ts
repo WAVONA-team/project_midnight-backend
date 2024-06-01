@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { User } from 'project_midnight';
 import prisma from '../client.js';
 
@@ -13,10 +12,11 @@ import {
 import { emailService } from './email.service.js';
 import { userService } from './user.service.js';
 
+const generateVerifyCode = () =>
+  Math.floor(100000 + Math.random() * 900000).toString();
+
 const register = async (email: string, password: string) => {
-  const activationToken = Math.floor(
-    100000 + Math.random() * 900000,
-  ).toString(); // 6 digit random number
+  const activationToken = generateVerifyCode();
 
   registerSchema.parse((await userService.findByEmail(email)) || {});
 
@@ -56,7 +56,7 @@ const reset = async (email: string) => {
 
   resetUserSchema.parse(user || {});
 
-  const resetToken = uuidv4().slice(0, 6);
+  const resetToken = generateVerifyCode();
 
   const updatedUser = await prisma.user.update({
     where: { email },
