@@ -71,6 +71,7 @@ const getTracks = async (
   userId: string,
   query: string = '',
   sortType: keyof Track = 'updatedAt',
+  order: 'asc' | 'desc' = 'desc',
 ) => {
   return await prisma.track.findMany({
     where: {
@@ -85,7 +86,7 @@ const getTracks = async (
       ],
     },
     orderBy: {
-      [sortType]: 'desc',
+      [sortType]: order,
     },
   });
 };
