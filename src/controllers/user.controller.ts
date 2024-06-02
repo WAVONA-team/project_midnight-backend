@@ -54,7 +54,7 @@ const getTracks = async (req: Request, res: Response) => {
   getTrackSchemaQuery.parse(req.query);
   getTrackSchemaParams.parse(req.params);
 
-  const { page, query, sortType, order } = req.query;
+  const { page, query, sortType, order, isFavourite } = req.query;
   const { userId } = req.params;
 
   const tracks = await userService.getTracks(
@@ -62,6 +62,7 @@ const getTracks = async (req: Request, res: Response) => {
     query as string,
     sortType as keyof Track,
     order as 'asc' | 'desc',
+    isFavourite as string
   );
 
   const normalizedPage =

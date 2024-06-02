@@ -72,7 +72,7 @@ const getTracks = async (
   query: string = '',
   sortType: keyof Track = 'updatedAt',
   order: 'asc' | 'desc' = 'desc',
-  isFavourite: boolean = false,
+  isFavourite: string = 'false',
 ) => {
   return await prisma.track.findMany({
     where: {
@@ -88,7 +88,7 @@ const getTracks = async (
             },
           ],
         },
-        ...(isFavourite ? [{ isFavourite: true }] : []),
+        ...(isFavourite === 'true' ? [{ isFavourite: true }] : []),
       ],
     },
     orderBy: {
