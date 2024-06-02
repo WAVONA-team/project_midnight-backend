@@ -72,17 +72,23 @@ const getTracks = async (
   query: string = '',
   sortType: keyof Track = 'updatedAt',
   order: 'asc' | 'desc' = 'desc',
+  isFavourite: boolean = false,
 ) => {
   return await prisma.track.findMany({
     where: {
       userIdTracks: userId,
-      OR: [
+      AND: [
         {
-          title: { contains: query, mode: 'insensitive' },
+          OR: [
+            {
+              title: { contains: query, mode: 'insensitive' },
+            },
+            {
+              author: { contains: query, mode: 'insensitive' },
+            },
+          ],
         },
-        {
-          author: { contains: query, mode: 'insensitive' },
-        },
+        ...(isFavourite ? [{ isFavourite: true }] : []),
       ],
     },
     orderBy: {
