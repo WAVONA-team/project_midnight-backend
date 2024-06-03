@@ -38,7 +38,7 @@ const createTrack = async ({
   source,
   duration,
 }: TrackToCreate) => {
-  await checkExistingTrack(urlId, userId);
+  await checkExistingTrack(urlId, imgUrl);
 
   return await prisma.track.create({
     data: {
@@ -83,7 +83,7 @@ const getTrackId = (url: string) => {
 };
 
 const checkExistingTrack = async (urlId: string, userId: string) => {
-  const track = await prisma.track.findUnique({
+  const track = await prisma.track.findFirst({
     where: { userIdTracks: userId, urlId },
   });
 
@@ -96,8 +96,11 @@ const createSearchHistory = async (
 ) => {
   const { title, url, imgUrl, author_name, source, duration } = parsedTrack;
 
-  const track = await prisma.track.findUnique({
-    where: { userIdSearchHistory: userId, urlId: getTrackId(url) as string },
+  const track = await prisma.track.findFirst({
+    where: {
+      userIdSearchHistory: userId,
+      urlId: getTrackId(url) as string,
+    },
   });
 
   if (track) {
@@ -163,7 +166,10 @@ const getOembedTrackInfo = async (
         duration,
       }).then((res) => res);
     })
-    .catch(() => trackParsingError.parse(''));
+    .catch((e) => {
+      console.log(e);
+      trackParsingError.parse('');
+    });
 };
 
 const getSpotifyTrackInfo = async (

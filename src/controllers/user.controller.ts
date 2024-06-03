@@ -59,10 +59,10 @@ const getTracks = async (req: Request, res: Response) => {
 
   const tracks = await userService.getTracks(
     userId,
-    query as string,
-    sortType as keyof Track,
-    order as 'asc' | 'desc',
-    isFavourite as string
+    (query || '') as string,
+    (sortType || 'updatedAt') as keyof Track,
+    (order || 'desc') as 'asc' | 'desc',
+    (isFavourite || 'false') as string,
   );
 
   const normalizedPage =

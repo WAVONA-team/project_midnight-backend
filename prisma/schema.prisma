@@ -50,7 +50,7 @@ model Track {
 
   title    String
   url      String
-  urlId    String  @unique
+  urlId    String
   imgUrl   String?
   author   String?
   source   String
