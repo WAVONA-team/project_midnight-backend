@@ -10,6 +10,7 @@ import {
   getTrackSchemaQuery,
   getTrackSchemaParams,
 } from '../zodSchemas/user/index.js';
+import { type Track } from '@prisma/client';
 
 const removeApp = async (req: Request, res: Response) => {
   removeAppSchema.parse(req.body);
@@ -53,10 +54,16 @@ const getTracks = async (req: Request, res: Response) => {
   getTrackSchemaQuery.parse(req.query);
   getTrackSchemaParams.parse(req.params);
 
-  const { page, query } = req.query;
+  const { page, query, sortType, order, isFavourite } = req.query;
   const { userId } = req.params;
 
-  const tracks = await userService.getTracks(userId, query as string);
+  const tracks = await userService.getTracks(
+    userId,
+    query as string,
+    sortType as keyof Track,
+    order as 'asc' | 'desc',
+    isFavourite as string
+  );
 
   const normalizedPage =
     +(page as unknown as number) <= 0 ? 1 : +(page as unknown as number);

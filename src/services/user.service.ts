@@ -2,6 +2,7 @@ import { User, NormalizedUser } from 'project_midnight';
 import prisma from '../client.js';
 import 'express-async-errors';
 import { checkExistingUser } from '../zodSchemas/user/index.js';
+import { type Track } from '@prisma/client';
 
 const normalize = ({
   id,
@@ -66,21 +67,32 @@ const removeSpotify = async (userId: string) => {
   });
 };
 
-const getTracks = async (userId: string, query: string) => {
+const getTracks = async (
+  userId: string,
+  query: string = '',
+  sortType: keyof Track = 'updatedAt',
+  order: 'asc' | 'desc' = 'desc',
+  isFavourite: string = 'false',
+) => {
   return await prisma.track.findMany({
     where: {
       userIdTracks: userId,
-      OR: [
+      AND: [
         {
-          title: { contains: query, mode: 'insensitive' },
+          OR: [
+            {
+              title: { contains: query, mode: 'insensitive' },
+            },
+            {
+              author: { contains: query, mode: 'insensitive' },
+            },
+          ],
         },
-        {
-          author: { contains: query, mode: 'insensitive' },
-        },
+        ...(isFavourite === 'true' ? [{ isFavourite: true }] : []),
       ],
     },
     orderBy: {
-      updatedAt: 'asc',
+      [sortType]: order,
     },
   });
 };

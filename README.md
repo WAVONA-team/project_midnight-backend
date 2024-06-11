@@ -10,7 +10,7 @@
   |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
   | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` type from `project_midnight` (lib) | Remove connected app |
   | `search-history` | `GET` | - `{ userId: string }` - Request params | `Track`[] type from `project_midnight` (lib) | Get user search history |
-  | `tracks` | `GET` | - `{ userId: string }` - Request params, `{ page: string }` - Request query | `Track`[] type from `project_midnight` (lib) | Get user saved tracks |
+  | `tracks` | `GET` | - `{ userId: string }` - Request params <br> - `{ page: string }` - Request query <br> - `{ query: string, sortType: string, order: string, isFavourite: boolean }` - Request query (optional) <br><br> `query` - by default empty <br><br> `sortType` has next values: <br> - `updatedAt` (By upload date, default value) <br> - `title` (By alphabet) <br> - `source` (By source) <br><br> `order` has next values: <br> - `asc` <br> - `desc` (by default) <br><br> `isFavourite` has next values: <br> - `true` (returns only favourite tracks) <br> - `false` (returns all user saved tracks including `query`, `sortType` and `order` ) | `Track`[] type from `project_midnight` (lib) | Get user saved tracks |
 - `track`
   <br>
   | Name | Method | Request | Response | Description |
