@@ -71,9 +71,7 @@ const getTrackId = (url: string) => {
     }
 
     case url.includes('spotify'): {
-      const regex = /(?:spotify\.com\/track\/)([a-zA-Z0-9]+)/;
-
-      return url.match(regex)?.[1] || null;
+      return url.split(':')[2];
     }
 
     default: {
@@ -231,6 +229,12 @@ const checkTrack = async (trackId: string, userId: string) => {
   });
 };
 
+const resolve = async (url: string) => {
+  return await axios
+    .head<string>(url, { maxRedirects: 0 })
+    .catch((err) => err.response.headers['location']);
+};
+
 export const trackService = {
   createTrack,
   checkExistingTrack,
@@ -240,4 +244,5 @@ export const trackService = {
   updateOrder,
   deleteFromSaved,
   checkTrack,
+  resolve,
 };
