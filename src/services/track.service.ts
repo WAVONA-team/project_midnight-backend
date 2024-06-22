@@ -28,6 +28,8 @@ type ParsedTrack = {
   duration: string;
 };
 
+const normalizeTitle = (title: string) => title.normalize('NFKC');
+
 const createTrack = async ({
   userId,
   title,
@@ -44,7 +46,7 @@ const createTrack = async ({
     data: {
       userIdTracks: userId,
       userIdSearchHistory: null,
-      title,
+      title: normalizeTitle(title),
       url,
       urlId,
       imgUrl,
@@ -116,7 +118,7 @@ const createSearchHistory = async (
     data: {
       userIdTracks: null,
       userIdSearchHistory: userId,
-      title,
+      title: normalizeTitle(title),
       url,
       urlId: getTrackId(url) as string,
       imgUrl,
