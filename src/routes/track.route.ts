@@ -6,6 +6,19 @@ export const trackRouter = express.Router();
 
 trackRouter.post('/new', authMiddleware, trackController.create);
 trackRouter.post('/get-info', authMiddleware, trackController.getInfo);
-trackRouter.get('/update-history-order/:trackId', authMiddleware, trackController.updateOrder);
-trackRouter.delete('/delete-from-saved/:trackId', authMiddleware, trackController.deleteFromSaved);
-trackRouter.get('/check-track/:userId/:trackId', authMiddleware, trackController.checkTrack);
+trackRouter.get(
+  '/update-history-order/:trackId',
+  authMiddleware,
+  trackController.updateOrder,
+);
+trackRouter.delete(
+  '/delete-from-saved/:trackId',
+  authMiddleware,
+  trackController.deleteFromSaved,
+);
+trackRouter.get(
+  '/check-track/:userId/:trackId',
+  authMiddleware,
+  trackController.checkTrack,
+);
+trackRouter.post('/resolve', authMiddleware, trackController.resolve);

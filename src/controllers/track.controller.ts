@@ -9,6 +9,7 @@ import {
   updateTrackOrderSchema,
   deleteFromSavedTrackSchema,
   checkTrackSchema,
+  resolveTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { userService } from '../services/user.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
@@ -46,8 +47,7 @@ const getInfo = async (req: Request, res: Response) => {
     }
 
     case url.includes('spotify'): {
-      const urlId = trackService.getTrackId(url) || '';
-
+      const urlId = trackService.getTrackId(url);
       const user = await userService.getById(userId);
 
       await musicServicesService
@@ -96,10 +96,19 @@ const checkTrack = async (req: Request, res: Response) => {
   res.send(track || 404);
 };
 
+const resolve = async (req: Request, res: Response) => {
+  resolveTrackSchema.parse(req.body);
+
+  const { url } = req.body;
+
+  res.send(await trackService.resolve(url));
+};
+
 export const trackController = {
   create,
   getInfo,
   updateOrder,
   deleteFromSaved,
   checkTrack,
+  resolve,
 };
