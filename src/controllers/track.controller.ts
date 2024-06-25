@@ -9,6 +9,7 @@ import {
   updateTrackOrderSchema,
   deleteFromSavedTrackSchema,
   checkTrackSchema,
+  updateFavouriteTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { userService } from '../services/user.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
@@ -96,10 +97,19 @@ const checkTrack = async (req: Request, res: Response) => {
   res.send(track || 404);
 };
 
+const updateFavourite = async (req: Request, res: Response) => {
+  updateFavouriteTrackSchema.parse(req.body);
+
+  const { trackId, userId } = req.body;
+
+  res.send(await trackService.updateFavouriteTrack(trackId, userId));
+};
+
 export const trackController = {
   create,
   getInfo,
   updateOrder,
   deleteFromSaved,
   checkTrack,
+  updateFavourite,
 };
