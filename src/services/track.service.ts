@@ -173,10 +173,7 @@ const getOembedTrackInfo = async (
         duration,
       }).then((res) => res);
     })
-    .catch((e) => {
-      console.log(e);
-      trackParsingError.parse('');
-    });
+    .catch(() => trackParsingError.parse(''));
 };
 
 const getSpotifyTrackInfo = async (
@@ -252,6 +249,18 @@ const resolve = async (url: string) => {
     .catch((err) => err.response.headers['location']);
 };
 
+const updateFavouriteTrack = async (trackId: string, userId: string) => {
+  const foundTrack = await prisma.track.findUnique({ where: { id: trackId } });
+
+  // return await prisma.track.update({
+  //   where: { id: trackId },
+  //   data: {
+  //     isFavourite: !foundTrack?.isFavourite,
+  //     userIdTracks: userId,
+  //   },
+  // });
+};
+
 export const trackService = {
   createTrack,
   checkExistingTrack,
@@ -262,4 +271,5 @@ export const trackService = {
   deleteFromSaved,
   checkTrack,
   resolve,
+  updateFavouriteTrack,
 };
