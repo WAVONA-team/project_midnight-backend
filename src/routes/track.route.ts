@@ -22,3 +22,4 @@ trackRouter.get(
   trackController.checkTrack,
 );
 trackRouter.post('/resolve', authMiddleware, trackController.resolve);
+trackRouter.patch('/update-favourite', authMiddleware, trackController.updateFavourite);
