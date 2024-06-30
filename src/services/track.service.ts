@@ -250,19 +250,29 @@ const resolve = async (url: string) => {
 };
 
 const updateFavouriteTrack = async (trackId: string, userId: string) => {
-  const favouritePlaylist = await prisma.playlist.findUnique({
-    where: { userIdFavouriteTracks: userId },
-  });
+  const { savedPlaylist, favouritePlaylist } =
+    await playlistService.getUserPlaylists(userId);
 
   const track = await prisma.track.findUnique({ where: { id: trackId } });
 
-  return await prisma.track.update({
+  await prisma.track.update({
     where: { id: trackId },
     data: {
       isFavourite: !track?.isFavourite,
       playlist: {
         [track?.isFavourite ? 'disconnect' : 'connect']: {
           id: favouritePlaylist?.id,
+        },
+      },
+    },
+  });
+
+  await prisma.track.update({
+    where: { id: trackId },
+    data: {
+      playlist: {
+        connect: {
+          id: savedPlaylist?.id,
         },
       },
     },
