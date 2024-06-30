@@ -7,6 +7,7 @@ import {
   unsupportedTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { SpotifyTrack, OembedTrack } from '../types/track/index.js';
+import { playlistService } from '../services/playlist.service.js';
 
 type TrackToCreate = {
   userId: string;
@@ -31,7 +32,6 @@ type ParsedTrack = {
 const normalizeTitle = (title: string) => title.normalize('NFKC');
 
 const createTrack = async ({
-  userId,
   title,
   url,
   urlId,
@@ -44,7 +44,6 @@ const createTrack = async ({
 
   return await prisma.track.create({
     data: {
-      userIdTracks: userId,
       userIdSearchHistory: null,
       title: normalizeTitle(title),
       url,
@@ -83,11 +82,20 @@ const getTrackId = (url: string) => {
 };
 
 const checkExistingTrack = async (urlId: string, userId: string) => {
-  const track = await prisma.track.findFirst({
-    where: { userIdTracks: userId, urlId },
-  });
+  const { favouritePlaylist, savedPlaylist } =
+    await playlistService.getUserPlaylists(userId);
 
-  return checkExistingTrackSchema.parse(track?.id || '');
+  const isTrackExistInFavouritePlaylist = favouritePlaylist?.tracks.some(
+    (track) => track.urlId === urlId,
+  );
+
+  const isTrackExistInSavedPlaylist = savedPlaylist?.tracks.some(
+    (track) => track.urlId === urlId,
+  );
+
+  if (!isTrackExistInFavouritePlaylist || !isTrackExistInSavedPlaylist) {
+    return checkExistingTrackSchema.parse('');
+  }
 };
 
 const createSearchHistory = async (
@@ -114,7 +122,6 @@ const createSearchHistory = async (
 
   return await prisma.track.create({
     data: {
-      userIdTracks: null,
       userIdSearchHistory: userId,
       title: normalizeTitle(title),
       url,
@@ -221,14 +228,22 @@ const updateOrder = async (trackId: string) => {
 const deleteFromSaved = async (trackId: string) => {
   return await prisma.track.update({
     where: { id: trackId },
-    data: { userIdTracks: null },
+    data: { playlist: undefined },
   });
 };
 
 const checkTrack = async (trackId: string, userId: string) => {
-  return await prisma.track.findUnique({
-    where: { id: trackId, userIdTracks: userId },
-  });
+  const { savedPlaylist, favouritePlaylist } =
+    await playlistService.getUserPlaylists(userId);
+
+  const foundSavedTrack = savedPlaylist?.tracks.find(
+    (track) => track.id === trackId,
+  );
+  const foundFavouriteTrack = favouritePlaylist?.tracks.find(
+    (track) => track.id === trackId,
+  );
+
+  return foundSavedTrack || foundFavouriteTrack || null;
 };
 
 const resolve = async (url: string) => {

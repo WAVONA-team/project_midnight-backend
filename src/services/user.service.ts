@@ -3,6 +3,7 @@ import prisma from '../client.js';
 import 'express-async-errors';
 import { checkExistingUser } from '../zodSchemas/user/index.js';
 import { type Track } from '@prisma/client';
+import { playlistService } from 'src/services/playlist.service.js';
 
 const normalize = ({
   id,
@@ -44,7 +45,6 @@ const getById = async (id: string) => {
       id,
     },
     include: {
-      tracks: true,
       playlists: true,
       searchHistory: true,
     },
@@ -70,31 +70,47 @@ const removeSpotify = async (userId: string) => {
 const getTracks = async (
   userId: string,
   query: string = '',
-  sortType: keyof Track = 'updatedAt',
+  sortType: keyof Track = 'createdAt',
   order: 'asc' | 'desc' = 'desc',
-  isFavourite: string = 'false',
 ) => {
-  return await prisma.track.findMany({
-    where: {
-      userIdTracks: userId,
-      AND: [
-        {
+  const savedPlaylist = await prisma.playlist.findUnique({
+    where: { userIdSavedTracks: userId },
+    include: {
+      tracks: {
+        where: {
           OR: [
-            {
-              title: { contains: query, mode: 'insensitive' },
-            },
-            {
-              author: { contains: query, mode: 'insensitive' },
-            },
+            { title: { contains: query, mode: 'insensitive' } },
+            { author: { contains: query, mode: 'insensitive' } },
           ],
         },
-        ...(isFavourite === 'true' ? [{ isFavourite: true }] : []),
-      ],
-    },
-    orderBy: {
-      [sortType]: order,
+        orderBy: {
+          [sortType]: order,
+        },
+      },
     },
   });
+
+  const favouritePlaylist = await prisma.playlist.findUnique({
+    where: { userIdFavouriteTracks: userId },
+    include: {
+      tracks: {
+        where: {
+          OR: [
+            { title: { contains: query, mode: 'insensitive' } },
+            { author: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+        orderBy: {
+          [sortType]: order,
+        },
+      },
+    },
+  });
+
+  return {
+    savedTracks: savedPlaylist?.tracks || [],
+    favouriteTracks: favouritePlaylist?.tracks || [],
+  };
 };
 
 export const userService = {
