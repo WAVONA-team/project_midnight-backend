@@ -34,16 +34,17 @@ model User {
   vkOAUTH        String?
   appleOAUTH     String?
 
-  tracks        Track[]    @relation("userTracks")
-  searchHistory Track[]    @relation("userSearchHistory")
-  playlists     Playlist[]
+  searchHistory Track[] @relation("userSearchHistory")
+
+  playlists       Playlist[] @relation("userForCustomPlaylists")
+  savedTracks     Playlist?  @relation("userForSavedTracks")
+  favouriteTracks Playlist?  @relation("userForFavouriteTracks")
 }
 
 model Track {
   id                  String  @id @default(uuid())
-  isFavourite         Boolean @default(false)
-  userIdTracks        String?
   userIdSearchHistory String?
+  isFavourite         Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,17 +58,22 @@ model Track {
   duration String
 
   playlist          Playlist[]
-  userTracks        User?      @relation("userTracks", fields: [userIdTracks], references: [id])
   userSearchHistory User?      @relation("userSearchHistory", fields: [userIdSearchHistory], references: [id])
 }
 
 model Playlist {
-  id     String @id @default(uuid())
-  userId String @unique
+  id   String @id @default(uuid())
+  name String
+
+  userIdCustomPlaylists String? @unique
+  userIdSavedTracks     String? @unique
+  userIdFavouriteTracks String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tracks Track[]
-  user   User    @relation(fields: [userId], references: [id])
+  tracks                 Track[]
+  userForCustomPlaylists User?   @relation(name: "userForCustomPlaylists", fields: [userIdCustomPlaylists], references: [id])
+  userForSavedTracks     User?   @relation(name: "userForSavedTracks", fields: [userIdSavedTracks], references: [id])
+  userForFavouriteTracks User?   @relation(name: "userForFavouriteTracks", fields: [userIdFavouriteTracks], references: [id])
 }

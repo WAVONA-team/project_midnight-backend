@@ -43,6 +43,13 @@ const activate = async (activationToken: string) => {
 
   userLoginSchema.parse(user || {});
 
+  await prisma.playlist.createMany({
+    data: [
+      { name: 'Сохраненные треки', userIdSavedTracks: user?.id },
+      { name: 'Избранные треки', userIdFavouriteTracks: user?.id },
+    ],
+  });
+
   await prisma.user.update({
     where: { activationToken },
     data: { activationToken: null },
@@ -96,6 +103,15 @@ const deleteUser = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
   resetVerifyUserSchema.parse(user || {});
+
+  await prisma.playlist.deleteMany({
+    where: {
+      OR: [
+        { userIdFavouriteTracks: user?.id },
+        { userIdSavedTracks: user?.id },
+      ],
+    },
+  });
 
   await prisma.user.delete({ where: { email } });
 };

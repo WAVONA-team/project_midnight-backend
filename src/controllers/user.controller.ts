@@ -54,33 +54,60 @@ const getTracks = async (req: Request, res: Response) => {
   getTrackSchemaQuery.parse(req.query);
   getTrackSchemaParams.parse(req.params);
 
-  const { page, query, sortType, order, isFavourite } = req.query;
+  const {
+    page,
+    query,
+    sortType,
+    order,
+    isFavourite: isFavouriteString,
+  } = req.query;
   const { userId } = req.params;
+  const isFavourite = isFavouriteString === 'true';
 
-  const tracks = await userService.getTracks(
+  const { savedTracks, favouriteTracks } = await userService.getTracks(
     userId,
     (query || '') as string,
-    (sortType || 'updatedAt') as keyof Track,
+    (sortType || 'createdAt') as keyof Track,
     (order || 'desc') as 'asc' | 'desc',
-    (isFavourite || 'false') as string,
   );
 
   const normalizedPage =
     +(page as unknown as number) <= 0 ? 1 : +(page as unknown as number);
 
-  if (tracks.length <= PAGE_SIZE) {
-    res.setHeader('x-total-count', tracks.length).send(tracks);
+  if (
+    isFavourite
+      ? favouriteTracks.length <= PAGE_SIZE
+      : savedTracks.length <= PAGE_SIZE
+  ) {
+    res
+      .setHeader(
+        'x-total-count',
+        isFavourite ? favouriteTracks.length : savedTracks.length,
+      )
+      .send(isFavourite ? favouriteTracks : savedTracks);
 
     return;
   }
 
   res
-    .setHeader('x-total-count', tracks.length)
+    .setHeader(
+      'x-total-count',
+      isFavourite ? favouriteTracks.length : savedTracks.length,
+    )
     .send(
-      tracks.slice(
-        (normalizedPage - 1) * PAGE_SIZE,
-        normalizedPage * PAGE_SIZE,
-      ),
+      isFavourite
+        ? {
+            favouriteTracks: favouriteTracks.slice(
+              (normalizedPage - 1) * PAGE_SIZE,
+              normalizedPage * PAGE_SIZE,
+            ),
+          }
+        : {
+            savedTracks: savedTracks.slice(
+              (normalizedPage - 1) * PAGE_SIZE,
+              normalizedPage * PAGE_SIZE,
+            ),
+          },
     );
 };
 

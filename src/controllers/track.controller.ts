@@ -10,6 +10,7 @@ import {
   deleteFromSavedTrackSchema,
   checkTrackSchema,
   resolveTrackSchema,
+  updateFavouriteTrackSchema,
 } from '../zodSchemas/track/index.js';
 import { userService } from '../services/user.service.js';
 import { musicServicesService } from '../services/musicServices.service.js';
@@ -104,6 +105,14 @@ const resolve = async (req: Request, res: Response) => {
   res.send(await trackService.resolve(url));
 };
 
+const updateFavourite = async (req: Request, res: Response) => {
+  updateFavouriteTrackSchema.parse(req.body);
+
+  const { trackId, userId } = req.body;
+
+  res.send(await trackService.updateFavouriteTrack(trackId, userId));
+};
+
 export const trackController = {
   create,
   getInfo,
@@ -111,4 +120,5 @@ export const trackController = {
   deleteFromSaved,
   checkTrack,
   resolve,
+  updateFavourite,
 };
