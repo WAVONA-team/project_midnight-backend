@@ -33,6 +33,12 @@ const spotifyRefresh = async (refreshToken: string, userId: string) => {
           spotifyOAUTH: access_token,
         },
       });
+    })
+    .catch(async () => {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { spotifyOAUTH: null, spotifyRefresh: null },
+      });
     });
 };
 
