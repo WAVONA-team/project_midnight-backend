@@ -79,36 +79,30 @@ const getTracks = async (req: Request, res: Response) => {
       ? favouriteTracks.length <= PAGE_SIZE
       : savedTracks.length <= PAGE_SIZE
   ) {
-    res
+    return res
       .setHeader(
         'x-total-count',
         isFavourite ? favouriteTracks.length : savedTracks.length,
       )
       .send(isFavourite ? favouriteTracks : savedTracks);
-
-    return;
   }
+
+  const prepairedFavouriteTracks = favouriteTracks.slice(
+    (normalizedPage - 1) * PAGE_SIZE,
+    normalizedPage * PAGE_SIZE,
+  );
+
+  const prepairedSavedTracks = savedTracks.slice(
+    (normalizedPage - 1) * PAGE_SIZE,
+    normalizedPage * PAGE_SIZE,
+  );
 
   res
     .setHeader(
       'x-total-count',
       isFavourite ? favouriteTracks.length : savedTracks.length,
     )
-    .send(
-      isFavourite
-        ? {
-            favouriteTracks: favouriteTracks.slice(
-              (normalizedPage - 1) * PAGE_SIZE,
-              normalizedPage * PAGE_SIZE,
-            ),
-          }
-        : {
-            savedTracks: savedTracks.slice(
-              (normalizedPage - 1) * PAGE_SIZE,
-              normalizedPage * PAGE_SIZE,
-            ),
-          },
-    );
+    .send(isFavourite ? prepairedFavouriteTracks : prepairedSavedTracks);
 };
 
 export const userController = {
