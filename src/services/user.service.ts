@@ -3,7 +3,6 @@ import prisma from '../client.js';
 import 'express-async-errors';
 import { checkExistingUser } from '../zodSchemas/user/index.js';
 import { type Track } from '@prisma/client';
-import { playlistService } from 'src/services/playlist.service.js';
 
 const normalize = ({
   id,
@@ -15,7 +14,6 @@ const normalize = ({
   yandexOAUTH,
   vkOAUTH,
   appleOAUTH,
-  tracks,
   playlists,
 }: User): NormalizedUser => ({
   id,
@@ -27,7 +25,6 @@ const normalize = ({
   yandexOAUTH,
   vkOAUTH,
   appleOAUTH,
-  tracks,
   playlists,
 });
 

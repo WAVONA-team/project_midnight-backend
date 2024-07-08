@@ -15,6 +15,8 @@ import { userService } from './user.service.js';
 const generateVerifyCode = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
+const normalizeEmail = (email: string) => email.toLowerCase();
+
 const register = async (email: string, password: string) => {
   const activationToken = generateVerifyCode();
 
@@ -59,18 +61,19 @@ const activate = async (activationToken: string) => {
 };
 
 const reset = async (email: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email: normalizeEmail(email) },
+  });
 
-  resetUserSchema.parse(user || {});
+  resetUserSchema.parse({ id: user?.id || '' });
 
   const resetToken = generateVerifyCode();
-
   const updatedUser = await prisma.user.update({
-    where: { email },
+    where: { email: normalizeEmail(email) },
     data: { resetToken },
   });
 
-  await emailService.sendResetEmail(email, resetToken);
+  await emailService.sendResetEmail(normalizeEmail(email), resetToken);
 
   return userService.normalize(updatedUser);
 };
@@ -97,10 +100,10 @@ const resetActivate = async (resetToken: string, newPassword: string) => {
   return userService.normalize(updatedUser);
 };
 
-const login = async () => {};
-
 const deleteUser = async (email: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email: normalizeEmail(email) },
+  });
 
   resetVerifyUserSchema.parse(user || {});
 
@@ -113,16 +116,18 @@ const deleteUser = async (email: string) => {
     },
   });
 
-  await prisma.user.delete({ where: { email } });
+  await prisma.user.delete({ where: { email: normalizeEmail(email) } });
 };
 
 const resend = async (email: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email: normalizeEmail(email) },
+  });
 
   resendUserSchema.parse(user || {});
 
   await emailService.sendActivationEmail(
-    email,
+    normalizeEmail(email),
     user?.activationToken as string,
   );
 
@@ -130,21 +135,31 @@ const resend = async (email: string) => {
 };
 
 const deleteResetToken = async (email: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email: normalizeEmail(email) },
+  });
 
   resendUserSchema.parse(user || {});
 
-  await prisma.user.update({ where: { email }, data: { resetToken: null } });
+  await prisma.user.update({
+    where: { email: normalizeEmail(email) },
+    data: { resetToken: null },
+  });
 
   return user?.activationToken;
 };
 
 const resendResetToken = async (email: string) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email: normalizeEmail(email) },
+  });
 
   resendUserSchema.parse(user || {});
 
-  await emailService.sendResetEmail(email, user?.resetToken as string);
+  await emailService.sendResetEmail(
+    normalizeEmail(email),
+    user?.resetToken as string,
+  );
 
   return user?.resetToken;
 };
@@ -152,7 +167,6 @@ const resendResetToken = async (email: string) => {
 export const authService = {
   register,
   activate,
-  login,
   reset,
   resetVerify,
   resetActivate,

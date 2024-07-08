@@ -12,23 +12,9 @@ export const resetSchema = z.object({
     }),
 });
 
-export const resetUserSchema = z
-  .object({
-    id: z.string().optional(),
-    activationToken: z.string().optional().nullable(),
-    resetToken: z.string().optional().nullable(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
-    email: z.string().optional(),
-    password: z.string().optional(),
-    spotifyOAUTH: z.string().optional().nullable(),
-    yandexOAUTH: z.string().optional().nullable(),
-    vkOAUTH: z.string().optional().nullable(),
-    appleOAUTH: z.string().optional().nullable(),
-  })
-  .refine(({ id }) => !!id, {
-    message: 'Пользователь не найден',
-  });
+export const resetUserSchema = z.object({
+  id: z.string().trim().min(1, { message: 'Пользователь не найден' }),
+});
 
 export const resetVerifyUserSchema = z
   .object({
