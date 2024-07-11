@@ -29,7 +29,7 @@ type ParsedTrack = {
   duration: string;
 };
 
-const normalizeTitle = (title: string) => title.normalize('NFKC');
+const normalizeString = (string: string) => string.normalize('NFKC');
 
 const createTrack = async ({
   title,
@@ -45,11 +45,11 @@ const createTrack = async ({
   return await prisma.track.create({
     data: {
       userIdSearchHistory: null,
-      title: normalizeTitle(title),
+      title: normalizeString(title),
       url,
       urlId,
       imgUrl,
-      author,
+      author: normalizeString(author),
       source,
       duration,
     },
@@ -123,11 +123,11 @@ const createSearchHistory = async (
   return await prisma.track.create({
     data: {
       userIdSearchHistory: userId,
-      title: normalizeTitle(title),
+      title: normalizeString(title),
       url,
       urlId: getTrackId(url) as string,
       imgUrl,
-      author: author_name,
+      author: normalizeString(author_name),
       source,
       duration,
     },
@@ -236,11 +236,12 @@ const checkTrack = async (trackId: string, userId: string) => {
   const foundSavedTrack = savedPlaylist?.tracks.find(
     (track) => track.id === trackId,
   );
+
   const foundFavouriteTrack = favouritePlaylist?.tracks.find(
     (track) => track.id === trackId,
   );
 
-  return foundSavedTrack || foundFavouriteTrack || null;
+  return foundFavouriteTrack || foundSavedTrack || null;
 };
 
 const resolve = async (url: string) => {
