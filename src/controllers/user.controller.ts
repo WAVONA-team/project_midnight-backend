@@ -64,7 +64,7 @@ const getTracks = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const isFavourite = isFavouriteString === 'true';
 
-  const { savedTracks, favouriteTracks } = await userService.getTracks(
+  const { savedPlaylist, favouritePlaylist } = await userService.getTracks(
     userId,
     (query || '') as string,
     (sortType || 'createdAt') as keyof Track,
@@ -76,33 +76,43 @@ const getTracks = async (req: Request, res: Response) => {
 
   if (
     isFavourite
-      ? favouriteTracks.length <= PAGE_SIZE
-      : savedTracks.length <= PAGE_SIZE
+      ? favouritePlaylist?.tracks.length! <= PAGE_SIZE
+      : savedPlaylist?.tracks.length! <= PAGE_SIZE
   ) {
     return res
       .setHeader(
         'x-total-count',
-        isFavourite ? favouriteTracks.length : savedTracks.length,
+        isFavourite
+          ? favouritePlaylist?.tracks.length!
+          : savedPlaylist?.tracks.length!,
       )
-      .send(isFavourite ? favouriteTracks : savedTracks);
+      .send(isFavourite ? favouritePlaylist : savedPlaylist);
   }
 
-  const prepairedFavouriteTracks = favouriteTracks.slice(
-    (normalizedPage - 1) * PAGE_SIZE,
-    normalizedPage * PAGE_SIZE,
-  );
+  const prepairedFavouritePlaylist = {
+    ...favouritePlaylist,
+    tracks: favouritePlaylist?.tracks.slice(
+      (normalizedPage - 1) * PAGE_SIZE,
+      normalizedPage * PAGE_SIZE,
+    ),
+  };
 
-  const prepairedSavedTracks = savedTracks.slice(
-    (normalizedPage - 1) * PAGE_SIZE,
-    normalizedPage * PAGE_SIZE,
-  );
+  const prepairedSavedPlaylist = {
+    ...savedPlaylist,
+    tracks: savedPlaylist?.tracks.slice(
+      (normalizedPage - 1) * PAGE_SIZE,
+      normalizedPage * PAGE_SIZE,
+    ),
+  };
 
   res
     .setHeader(
       'x-total-count',
-      isFavourite ? favouriteTracks.length : savedTracks.length,
+      isFavourite
+        ? favouritePlaylist?.tracks.length!
+        : savedPlaylist?.tracks.length!,
     )
-    .send(isFavourite ? prepairedFavouriteTracks : prepairedSavedTracks);
+    .send(isFavourite ? prepairedFavouritePlaylist : prepairedSavedPlaylist);
 };
 
 export const userController = {
