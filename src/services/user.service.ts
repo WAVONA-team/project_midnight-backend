@@ -105,8 +105,8 @@ const getTracks = async (
   });
 
   return {
-    savedTracks: savedPlaylist?.tracks || [],
-    favouriteTracks: favouritePlaylist?.tracks || [],
+    favouritePlaylist,
+    savedPlaylist,
   };
 };
 
