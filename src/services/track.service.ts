@@ -223,9 +223,8 @@ const updateOrder = async (trackId: string) => {
 };
 
 const deleteFromSaved = async (trackId: string) => {
-  return await prisma.track.update({
+  return await prisma.track.delete({
     where: { id: trackId },
-    data: { playlist: undefined },
   });
 };
 
