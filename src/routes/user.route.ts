@@ -10,4 +10,9 @@ userRouter.get(
   authMiddleware,
   userController.getSearchHistory,
 );
+userRouter.get(
+  '/search-history/remove/:userId',
+  authMiddleware,
+  userController.removeSearchHistory,
+);
 userRouter.get('/tracks/:userId', authMiddleware, userController.getTracks);

@@ -110,10 +110,18 @@ const getTracks = async (
   };
 };
 
+const removeSearchHistory = async (userId: string) => {
+  return await prisma.track.updateMany({
+    where: { userIdSearchHistory: userId },
+    data: { userIdSearchHistory: null },
+  });
+};
+
 export const userService = {
   normalize,
   findByEmail,
   getById,
   removeSpotify,
   getTracks,
+  removeSearchHistory,
 };

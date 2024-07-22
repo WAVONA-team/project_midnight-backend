@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable indent */
 import { type Request, type Response } from 'express';
 import { userService } from '../services/user.service.js';
@@ -115,8 +116,19 @@ const getTracks = async (req: Request, res: Response) => {
     .send(isFavourite ? prepairedFavouritePlaylist : prepairedSavedPlaylist);
 };
 
+const removeSearchHistory = async (req: Request, res: Response) => {
+  getSearchHistorySchema.parse(req.params);
+
+  const { userId } = req.params;
+
+  await userService.removeSearchHistory(userId);
+
+  res.sendStatus(204);
+};
+
 export const userController = {
   removeApp,
   getSearchHistory,
   getTracks,
+  removeSearchHistory,
 };
