@@ -222,9 +222,38 @@ const updateOrder = async (trackId: string) => {
   });
 };
 
-const deleteFromSaved = async (trackId: string) => {
-  return await prisma.track.delete({
+const deleteFromSaved = async (trackId: string, userId: string) => {
+  await prisma.track.update({
     where: { id: trackId },
+    data: {
+      playlist: {
+        disconnect: {
+          userIdFavouriteTracks: userId,
+        },
+      },
+    },
+  });
+
+  await prisma.track.update({
+    where: { id: trackId },
+    data: {
+      playlist: {
+        disconnect: {
+          userIdSavedTracks: userId,
+        },
+      },
+    },
+  });
+
+  await prisma.track.update({
+    where: { id: trackId },
+    data: {
+      playlist: {
+        disconnect: {
+          userIdCustomPlaylists: userId,
+        },
+      },
+    },
   });
 };
 
