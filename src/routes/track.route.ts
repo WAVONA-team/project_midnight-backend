@@ -12,7 +12,7 @@ trackRouter.get(
   trackController.updateOrder,
 );
 trackRouter.delete(
-  '/delete-from-saved/:trackId',
+  '/delete-from-saved/:userId/:trackId',
   authMiddleware,
   trackController.deleteFromSaved,
 );

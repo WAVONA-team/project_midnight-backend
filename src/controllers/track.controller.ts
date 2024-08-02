@@ -82,9 +82,9 @@ const updateOrder = async (req: Request, res: Response) => {
 const deleteFromSaved = async (req: Request, res: Response) => {
   deleteFromSavedTrackSchema.parse(req.params);
 
-  const { trackId } = req.params;
+  const { trackId, userId } = req.params;
 
-  res.send(await trackService.deleteFromSaved(trackId));
+  res.send(await trackService.deleteFromSaved(trackId, userId));
 };
 
 const checkTrack = async (req: Request, res: Response) => {
