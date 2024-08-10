@@ -245,13 +245,20 @@ const deleteFromSaved = async (trackId: string, userId: string) => {
     },
   });
 
+  const playlists = await prisma.playlist.findMany({
+    where: {
+      userIdCustomPlaylists: userId,
+      tracks: {
+        some: { id: trackId },
+      },
+    },
+  });
+
   await prisma.track.update({
     where: { id: trackId },
     data: {
       playlist: {
-        disconnect: {
-          userIdCustomPlaylists: userId,
-        },
+        disconnect: playlists.map(playlist => ({ id: playlist.id })),
       },
     },
   });

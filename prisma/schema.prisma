@@ -65,7 +65,7 @@ model Playlist {
   id   String @id @default(uuid())
   name String
 
-  userIdCustomPlaylists String? @unique
+  userIdCustomPlaylists String?
   userIdSavedTracks     String? @unique
   userIdFavouriteTracks String? @unique
 
