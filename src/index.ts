@@ -1,9 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-// import cookieSession from 'cookie-session';
 import passport from 'passport';
-// import session from 'express-session';
 import 'dotenv/config.js';
 
 import { zodMiddleware } from './middlewares/zod.middleware.js';
@@ -12,6 +10,7 @@ import { authRouter } from './routes/auth.route.js';
 import { userRouter } from './routes/user.route.js';
 import { musicServicesRouter } from './routes/musicServices.route.js';
 import { trackRouter } from './routes/track.route.js';
+import { playlistsRouter } from './routes/playlists.route.js';
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -43,6 +42,7 @@ app.use(authRouter);
 app.use('/users', userRouter);
 app.use(musicServicesRouter);
 app.use('/track', trackRouter);
+app.use('/playlists', playlistsRouter);
 
 app.get('/test', (_req, res) => res.send(200));
 
