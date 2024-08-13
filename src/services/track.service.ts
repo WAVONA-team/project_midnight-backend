@@ -265,18 +265,14 @@ const deleteFromSaved = async (trackId: string, userId: string) => {
 };
 
 const checkTrack = async (trackId: string, userId: string) => {
-  const { savedPlaylist, favouritePlaylist } =
+  const { favouritePlaylist } =
     await playlistService.getUserPlaylists(userId);
-
-  const foundSavedTrack = savedPlaylist?.tracks.find(
-    (track) => track.id === trackId,
-  );
 
   const foundFavouriteTrack = favouritePlaylist?.tracks.find(
     (track) => track.id === trackId,
   );
 
-  return foundFavouriteTrack || foundSavedTrack || null;
+  return foundFavouriteTrack || null;
 };
 
 const resolve = async (url: string) => {
@@ -313,6 +309,8 @@ const updateFavouriteTrack = async (trackId: string, userId: string) => {
       },
     },
   });
+
+  return !track?.isFavourite;
 };
 
 export const trackService = {
