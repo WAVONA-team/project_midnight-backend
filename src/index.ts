@@ -1,9 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-// import cookieSession from 'cookie-session';
 import passport from 'passport';
-// import session from 'express-session';
 import 'dotenv/config.js';
 
 import { zodMiddleware } from './middlewares/zod.middleware.js';

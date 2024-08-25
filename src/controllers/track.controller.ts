@@ -56,12 +56,14 @@ const getInfo = async (req: Request, res: Response) => {
         .catch(() => unauthorizedSpotifySchema.parse(''));
 
       return res.send(
-        await trackService.getSpotifyTrackInfo(
-          `https://api.spotify.com/v1/tracks/${urlId}`,
-          user?.spotifyOAUTH as string,
-          user?.id as string,
-          url,
-        ),
+        await trackService
+          .getSpotifyTrackInfo(
+            `https://api.spotify.com/v1/tracks/${urlId}`,
+            user?.spotifyOAUTH as string,
+            user?.id as string,
+            url,
+          )
+          .catch(() => unauthorizedSpotifySchema.parse('')),
       );
     }
 
