@@ -17,9 +17,15 @@ trackRouter.delete(
   trackController.deleteFromSaved,
 );
 trackRouter.get(
-  '/check-track/:userId/:trackId',
+  '/check-favourite-track/:userId/:trackId',
   authMiddleware,
-  trackController.checkTrack,
+  trackController.checkFavouriteTrack,
+);
+trackRouter.get(
+  '/check-saved-track/:userId/:trackId',
+  authMiddleware,
+  trackController.checkSavedTrack,
 );
 trackRouter.post('/resolve', authMiddleware, trackController.resolve);
 trackRouter.patch('/update-favourite', authMiddleware, trackController.updateFavourite);
+trackRouter.patch('/update-saved', authMiddleware, trackController.updateSaved);
