@@ -258,21 +258,30 @@ const deleteFromSaved = async (trackId: string, userId: string) => {
     where: { id: trackId },
     data: {
       playlist: {
-        disconnect: playlists.map(playlist => ({ id: playlist.id })),
+        disconnect: playlists.map((playlist) => ({ id: playlist.id })),
       },
     },
   });
 };
 
-const checkTrack = async (trackId: string, userId: string) => {
-  const { favouritePlaylist } =
-    await playlistService.getUserPlaylists(userId);
+const checkFavouriteTrack = async (trackId: string, userId: string) => {
+  const { favouritePlaylist } = await playlistService.getUserPlaylists(userId);
 
   const foundFavouriteTrack = favouritePlaylist?.tracks.find(
     (track) => track.id === trackId,
   );
 
   return foundFavouriteTrack || null;
+};
+
+const checkSavedTrack = async (trackId: string, userId: string) => {
+  const { savedPlaylist } = await playlistService.getUserPlaylists(userId);
+
+  const foundSavedTrack = savedPlaylist?.tracks.find(
+    (track) => track.id === trackId,
+  );
+
+  return foundSavedTrack || null;
 };
 
 const resolve = async (url: string) => {
@@ -302,6 +311,7 @@ const updateFavouriteTrack = async (trackId: string, userId: string) => {
   await prisma.track.update({
     where: { id: trackId },
     data: {
+      isSaved: !track?.isSaved,
       playlist: {
         connect: {
           id: savedPlaylist?.id,
@@ -313,6 +323,25 @@ const updateFavouriteTrack = async (trackId: string, userId: string) => {
   return !track?.isFavourite;
 };
 
+const updateSavedTrack = async (trackId: string, userId: string) => {
+  const { savedPlaylist } = await playlistService.getUserPlaylists(userId);
+  const track = await prisma.track.findUnique({ where: { id: trackId } });
+
+  await prisma.track.update({
+    where: { id: trackId },
+    data: {
+      isSaved: !track?.isSaved,
+      playlist: {
+        [track?.isSaved ? 'disconnect' : 'connect']: {
+          id: savedPlaylist?.id,
+        },
+      },
+    },
+  });
+
+  return !track?.isSaved;
+};
+
 export const trackService = {
   createTrack,
   checkExistingTrack,
@@ -321,7 +350,9 @@ export const trackService = {
   getTrackId,
   updateOrder,
   deleteFromSaved,
-  checkTrack,
+  checkFavouriteTrack,
+  checkSavedTrack,
   resolve,
   updateFavouriteTrack,
+  updateSavedTrack,
 };

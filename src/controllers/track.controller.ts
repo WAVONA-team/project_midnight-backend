@@ -89,12 +89,22 @@ const deleteFromSaved = async (req: Request, res: Response) => {
   res.send(await trackService.deleteFromSaved(trackId, userId));
 };
 
-const checkTrack = async (req: Request, res: Response) => {
+const checkFavouriteTrack = async (req: Request, res: Response) => {
   checkTrackSchema.parse(req.params);
 
   const { trackId, userId } = req.params;
 
-  const track = await trackService.checkTrack(trackId, userId);
+  const track = await trackService.checkFavouriteTrack(trackId, userId);
+
+  res.send(track || 404);
+};
+
+const checkSavedTrack = async (req: Request, res: Response) => {
+  checkTrackSchema.parse(req.params);
+
+  const { trackId, userId } = req.params;
+
+  const track = await trackService.checkSavedTrack(trackId, userId);
 
   res.send(track || 404);
 };
@@ -115,12 +125,22 @@ const updateFavourite = async (req: Request, res: Response) => {
   res.send(await trackService.updateFavouriteTrack(trackId, userId));
 };
 
+const updateSaved = async (req: Request, res: Response) => {
+  updateFavouriteTrackSchema.parse(req.body);
+
+  const { trackId, userId } = req.body;
+
+  res.send(await trackService.updateSavedTrack(trackId, userId));
+};
+
 export const trackController = {
   create,
   getInfo,
   updateOrder,
   deleteFromSaved,
-  checkTrack,
+  checkFavouriteTrack,
+  checkSavedTrack,
   resolve,
   updateFavourite,
+  updateSaved,
 };
