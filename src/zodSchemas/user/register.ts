@@ -15,5 +15,5 @@ export const registerSchema = z
     appleOAUTH: z.string().optional().nullable(),
   })
   .refine((data) => !data.id, {
-    message: 'Пользователь уже существует',
+    message: 'User already exists',
   });

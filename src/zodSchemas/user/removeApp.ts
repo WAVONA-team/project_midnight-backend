@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const removeAppSchema = z.object({
   provider: z.string().trim().min(1, {
-    message: 'Введите сервис',
+    message: 'Please enter the service',
   }),
   userId: z.string().trim().min(1, {
-    message: 'Введите id пользователя для удаления',
+    message: 'Please enter the user ID for removal',
   }),
 });

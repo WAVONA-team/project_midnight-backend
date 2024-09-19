@@ -5,15 +5,15 @@ export const resetSchema = z.object({
     .string()
     .trim()
     .min(1, {
-      message: 'Введите email',
+      message: 'Enter email',
     })
     .email({
-      message: 'Неверный формат. Пример: example@domain.com',
+      message: 'Incorrect format. Example: example@domain.com',
     }),
 });
 
 export const resetUserSchema = z.object({
-  id: z.string().trim().min(1, { message: 'Пользователь не найден' }),
+  id: z.string().trim().min(1, { message: 'User not found' }),
 });
 
 export const resetVerifyUserSchema = z
@@ -31,7 +31,7 @@ export const resetVerifyUserSchema = z
     appleOAUTH: z.string().optional().nullable(),
   })
   .refine(({ id }) => !!id, {
-    message: 'Неверный код для сброса',
+    message: 'Invalid reset code',
   });
 
 export const resendUserSchema = z
@@ -49,7 +49,7 @@ export const resendUserSchema = z
     appleOAUTH: z.string().optional().nullable(),
   })
   .refine(({ id }) => !!id, {
-    message: 'Пользователь не найден',
+    message: 'User not found',
   });
 
 export const verifyResetTokenSchema = z.object({
@@ -57,10 +57,10 @@ export const verifyResetTokenSchema = z.object({
     .string()
     .trim()
     .refine((data) => data.length, {
-      message: 'Введите токен для сброса',
+      message: 'Enter reset token',
     })
     .refine((data) => data.length === 6, {
-      message: 'Длина токена должна быть 6 символов',
+      message: 'Token length must be 6 characters',
     }),
 });
 
@@ -70,35 +70,35 @@ export const setPasswordSchema = z
       .string()
       .trim()
       .min(1, {
-        message: 'Введите новый пароль',
+        message: 'Enter new password',
       })
       .min(6, {
-        message: 'Новый пароль должен быть не менее 6-ти символов',
+        message: 'The new password must be at least 6 characters long',
       }),
     confirmationPassword: z
       .string()
       .trim()
       .min(1, {
-        message: 'Введите пароль для подтверждения',
+        message: 'Enter password to confirm',
       })
       .min(6, {
-        message: 'Пароль для подтверждения должен быть не менее 6-ти символов',
+        message: 'The password for confirmation must be at least 6 characters long',
       }),
     resetToken: z
       .string()
       .trim()
       .min(1, {
-        message: 'Введите токен для сброса',
+        message: 'Enter reset token',
       })
       .min(6, {
-        message: 'Токен для сброса должен быть не менее 6-ти символов',
+        message: 'The reset token must be at least 6 characters long.',
       }),
   })
   .refine(
     ({ newPassword, confirmationPassword }) =>
       newPassword === confirmationPassword,
     {
-      message: 'Пароли не совпадают',
+      message: 'The passwords do not match',
       path: ['formErrors'],
     },
   );

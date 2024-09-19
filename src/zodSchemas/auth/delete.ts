@@ -5,9 +5,9 @@ export const deleteSchema = z.object({
     .string()
     .trim()
     .min(1, {
-      message: 'Введите email',
+      message: 'Enter email',
     })
     .email({
-      message: 'Пользователь не найден',
+      message: 'No users found',
     }),
 });

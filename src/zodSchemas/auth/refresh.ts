@@ -6,8 +6,8 @@ export const refreshSchema = z
     token: z.string().trim(),
   })
   .refine(({ token }) => !!token, {
-    message: 'Неавторизированный токен',
+    message: 'Unauthorized token',
   })
   .refine(({ userId }) => !!userId, {
-    message: 'Неавторизированный пользователь',
+    message: 'Unauthorized user',
   });
