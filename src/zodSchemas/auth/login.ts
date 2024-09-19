@@ -11,13 +11,13 @@ export const loginSchema = z
     async ({ password, confirmPassword }) =>
       await bcrypt.compare(confirmPassword, password),
     {
-      message: 'Неправильный пароль!',
+      message: 'Incorrect password!',
       path: ['password'],
     },
   );
 
 export const userLoginSchema = z.object({
   id: z.string().trim().min(1, {
-    message: 'Пользователь не найден или неправильный код активации',
+    message: 'User not found or invalid activation code',
   }),
 });

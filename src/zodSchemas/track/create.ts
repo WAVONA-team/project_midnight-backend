@@ -2,55 +2,55 @@ import { z } from 'zod';
 
 export const createTrackSchema = z.object({
   userId: z.string().trim().min(1, {
-    message: 'Введите id пользователя',
+    message: 'Please enter the user ID',
   }),
   title: z.string().trim().min(1, {
-    message: 'Введите название трека',
+    message: 'Please enter the track title',
   }),
   url: z.string().trim().min(1, {
-    message: 'Введите ссылку на трек',
+    message: 'Please enter the track URL',
   }),
   urlId: z.string().trim().min(1, {
-    message: 'Введите id ссылки',
+    message: 'Please enter the URL ID',
   }),
   imgUrl: z.string().trim().min(1, {
-    message: 'Введите ссылку на изображение трека',
+    message: 'Please enter the image URL for the track',
   }),
   author: z.string().trim().min(1, {
-    message: 'Введите автора трека',
+    message: 'Please enter the track author',
   }),
   source: z.string().trim().min(1, {
-    message: 'Введите источник трека',
+    message: 'Please enter the track source',
   }),
   duration: z.string().trim().min(1, {
-    message: 'Введите продолжительность трека',
+    message: 'Please enter the track duration',
   }),
 });
 
 export const getTrackInfoSchema = z.object({
   url: z.string().trim().min(1, {
-    message: 'Введите ссылку на трек',
+    message: 'Please enter the track URL',
   }),
   duration: z.string().trim().min(1, {
-    message: 'Введите продолжительность трека',
+    message: 'Please enter the track duration',
   }),
   userId: z.string().trim().min(1, {
-    message: 'Пользователь не авторизован',
+    message: 'User is not authorized',
   }),
 });
 
 export const checkExistingTrackSchema = z.string().trim().max(0, {
-  message: 'Такой трек уже существует',
+  message: 'This track already exists',
 });
 
 export const trackParsingError = z.string().trim().min(1, {
-  message: 'Некорректный формат. Проверьте правильность ввода',
+  message: 'Incorrect format. Please check your input',
 });
 
 export const unsupportedTrackSchema = z.string().trim().min(1, {
-  message: 'К сожалению, на данный момент этот источник не поддерживается',
+  message: 'Unfortunately, this source is not supported at the moment',
 });
 
 export const unauthorizedSpotifySchema = z.string().trim().min(1, {
-  message: 'Для выполнения этой операции необходима авторизация в spotify',
+  message: 'Spotify authorization is required for this operation',
 });
