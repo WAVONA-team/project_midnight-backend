@@ -35,11 +35,11 @@ const generateHTML = (
 ) => {
   return `
     <!DOCTYPE html>
-      <html lang="ru">
+      <html lang="en">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Верификационный код</title>
+          <title>Verification Code</title>
           <style>
             body {
               font-family: 'Arial', sans-serif;
@@ -119,12 +119,12 @@ const generateHTML = (
 const sendActivationEmail = (email: string, token: string) => {
   return send({
     email,
-    subject: 'Подтверждение регистрации',
+    subject: 'Registration Confirmation',
     html: generateHTML(
-      'Код подтверждения',
-      'Ваш код подтверждения:',
+      'Confirmation Code',
+      'Your confirmation code:',
       token,
-      'Если вы не запрашивали код, проигнорируйте это письмо',
+      'If you did not request this code, please ignore this email',
     ),
   });
 };
@@ -132,12 +132,12 @@ const sendActivationEmail = (email: string, token: string) => {
 const sendResetEmail = (email: string, token: string) => {
   return send({
     email,
-    subject: 'Сброс пароля',
+    subject: 'Password Reset',
     html: generateHTML(
-      'Код для сброса пароля',
-      'Ваш код для сброса пароля:',
+      'Password Reset Code',
+      'Your password reset code:',
       token,
-      'Если вы не запрашивали код, проигнорируйте это письмо',
+      'If you did not request a code, please ignore this email',
     ),
   });
 };
@@ -149,7 +149,7 @@ const sendSuccessResetEmail = (email: string) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Подтверждение сброса пароля</title>
+      <title>Password Reset Confirmation</title>
       <style>
         body {
           font-family: 'Arial', sans-serif;
@@ -204,24 +204,23 @@ const sendSuccessResetEmail = (email: string) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Сброс пароля</h1>
+          <h1>Password Reset</h1>
         </div>
         <div class="content">
-          <p>Ваш пароль был успешно сброшен</p>
-          <p>Если вы не запрашивали сброс пароля, просим немедленно обратиться в службу поддержки</p>
-          <p class="highlight">Спасибо за использование Project Midnight!</p>
+          <p>Your password has been successfully reset</p>
+          <p>If you did not request a password reset, please contact support immediately</p>
+          <p class="highlight">Thank you for using Project Midnight!</p>
         </div>
         <div class="footer">
-          <p>Если у вас есть вопросы, вы всегда можете <a href="mailto:wavona.team@gmail.com"
-              style="color: #9C1C22;">Обратиться в службу поддержки
-            </a></p>
+          <p>If you have any questions, you can always <a href="mailto:wavona.team@gmail.com"
+              style="color: #9C1C22;">Contact Support</a></p>
         </div>
       </div>
     </body>
     </html>
   `;
 
-  return send({ email, subject: 'Успешный сброс пароля', html });
+  return send({ email, subject: 'Successful Password Reset', html });
 };
 
 export const emailService = {
