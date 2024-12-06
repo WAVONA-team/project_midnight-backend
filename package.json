@@ -9,7 +9,8 @@
     "buildDev": "npx tsc -p tsconfig.json --watch",
     "dev": "nodemon ./dest/index.js",
     "lint": "npx eslint src/**",
-    "db:update": "npx prisma db push"
+    "db:update": "npx prisma db push",
+    "start": "node ./dest/index.js"
   },
   "repository": {
     "type": "git",
