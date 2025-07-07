@@ -1,37 +1,36 @@
-## Usage
+# Project Midnight Backend
 
-[Base url](https://project-midnight-backend.onrender.com/)
+**Project Midnight Backend** is a robust Node.js/TypeScript server powering a modern music management platform. Designed for music enthusiasts and integrators, it enables seamless user authentication, multi-service music library management, and playlist curation. The backend is built to support scalable, secure, and extensible music experiences across web and mobile clients.
 
-## Endpoints
+## Key Features
 
-- `users`
-  <br>
-  | Name | Method | Request | Response | Description |
-  |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
-  | `remove-app` | `PATCH` | - `{ provider: Spotify, userId: string }` - Request body | `NormalizedUser` type from `project_midnight` (lib) | Remove connected app |
-  | `search-history` | `GET` | - `{ userId: string }` - Request params | `Track`[] type from `project_midnight` (lib) | Get user search history |
-  | `tracks` | `GET` | - `{ userId: string }` - Request params <br> - `{ page: string }` - Request query <br> - `{ query: string, sortType: string, order: string, isFavourite: boolean }` - Request query (optional) <br><br> `query` - by default empty <br><br> `sortType` has next values: <br> - `updatedAt` (By upload date, default value) <br> - `title` (By alphabet) <br> - `source` (By source) <br><br> `order` has next values: <br> - `asc` <br> - `desc` (by default) <br><br> `isFavourite` has next values: <br> - `true` (returns only favourite tracks) <br> - `false` (returns all user saved tracks including `query`, `sortType` and `order` ) | `Track`[] type from `project_midnight` (lib) | Get user saved tracks |
-  | `search-history/remove` | `GET` | - `{ userId: string }` - Request params | `204` | Remove user search history |
-- `track`
-  <br>
-  | Name | Method | Request | Response | Description |
-  |-------|--------|-------------------------------------|------------------------------------------------|-------------------------------------------------|
-  | `new` | `POST` | - `{ userId: string, title: string, url: string, urlId: string, imgUrl: string, author: string, source: string, duration: string }` - Request body | `Track` type from `project_midnight` (lib) | Track creation |
-  | `get-info` | `POST` | - `{ url: string, userId: string, duration: string }` - Request body | `{ id: string, userIdSearchHistory: string, createdAt: Date, updatedAt: Date, title: string, author: string, imgUrl: string, source: string, url: string, urlId: string, duration: string }` | Get track info |
-  | `delete-from-saved` | `DELETE` | - `{ trackId: string }` - Request params | `Track` type from `project_midnight` (lib) | Remove track from saved |
-  | `check-track` | `GET` | - `{ trackId: string, userId: string }` - Request params | `Track` type from `project_midnight` (lib) OR `404` if its not found | Check if track exsists in user saved tracks |
+- **Multi-Service Music Integration**: Connects with YouTube, Spotify and SoundCloud for unified music management.
+- **User-Centric Library**: Secure user authentication, personal search history, and favorite tracks.
+- **Advanced Playlist Management**: Create, update, and organize custom playlists and saved tracks.
+- **Rich Track Metadata**: Handles detailed track info, including source, author, and artwork.
+- **Secure & Modern Auth**: OAuth with Passport.js, JWT, and refresh token flows.
+- **Production-Ready API**: RESTful endpoints, input validation, and error handling.
 
-## How to run localy
+## Technologies & Architecture
 
-1. Add env's
-2. Split your terminal and run `npm run buildDev` and then `npm run dev`
+- **Core Stack**: Node.js, Express, TypeScript.
+- **Database**: PostgreSQL, managed via Prisma ORM (see [`prisma/schema.prisma`](prisma/schema.prisma)).
+- **Authentication**: Passport.js (multi-provider OAuth), JWT, bcrypt for password security.
+- **API Structure**: Modular routing (`src/routes/`), controller-service pattern (`src/controllers/`, `src/services/`), and Zod for schema validation.
+- **Dev Experience**: TypeScript-first, ESLint/Prettier, hot-reload with Nodemon, environment config via dotenv.
+- **Email & Notifications**: Nodemailer integration for user flows.
+- **Extensibility**: Clean separation of concerns, easy to add new music providers or user features.
 
-## Errors from server
+### Project Structure
 
-We use `react-hook-form` to work with forms and give errors from server.
-<br>
-**Important**: `react-hook-form` is **not** used for validating data. It needs to show errors. The types of errors you can find in `src/shared/types/ServerError.ts`.
-<br>
-Here is the example backend response:
-<br>
-![alt text](https://iili.io/JM7u6Qe.jpg)
+```
+src/
+  controllers/   // Business logic for users, tracks, playlists, auth
+  routes/        // API endpoints (auth, users, tracks, playlists, music services)
+  services/      // Core services: user, track, playlist, auth, email, tokens
+  middlewares/   // Validation, error handling, etc.
+  zodSchemas/    // Input validation schemas
+  types/         // Shared TypeScript types
+prisma/
+  schema.prisma  // Database models: User, Track, Playlist, Token
+```
